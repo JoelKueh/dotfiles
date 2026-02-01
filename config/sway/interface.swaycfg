@@ -16,7 +16,7 @@ for_window [app_id=".*"] inhibit_idle fullscreen
 # Background
 # =============================================================================
 
-output * bg $HOME/Other/Wallpaper/kanagawa.jpg fill
+output * bg $HOME/.config/sway/wallpaper/kanagawa.jpg fill
 
 # =============================================================================
 # Bar
