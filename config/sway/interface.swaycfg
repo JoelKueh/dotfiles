@@ -1,0 +1,61 @@
+
+include ./colors.swaycfg
+
+# =============================================================================
+# Idle and Sleep
+# =============================================================================
+
+exec swayidle -w \
+         timeout 300 'swaylock -f -c 000000' \
+         timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+         before-sleep 'swaylock -f -c 000000'
+for_window [class=".*"] inhibit_idle fullscreen
+for_window [app_id=".*"] inhibit_idle fullscreen
+
+# =============================================================================
+# Background
+# =============================================================================
+
+output * bg $HOME/Other/Wallpaper/kanagawa.jpg fill
+
+# =============================================================================
+# Bar
+# =============================================================================
+
+bar {
+    swaybar_command waybar
+    position top
+    colors {
+        background         $base
+        statusline         $text
+        focused_statusline $text
+        focused_separator  $base
+
+        # target           border bg        text
+        focused_workspace  $base  $light    $base
+        active_workspace   $base  $gray     $text
+        inactive_workspace $base  $base     $text
+        urgent_workspace   $text  $red      $base
+    }
+}
+
+# =============================================================================
+# Wmenu
+# =============================================================================
+
+bindsym $mod+o exec $HOME/.config/sway/menu/wmenu-desktop-menu
+bindsym $mod+p exec wmenu-run
+bindsym $mod+i exec $HOME/.config/sway/menu/wmenu-menus
+
+# =============================================================================
+# Theming
+# =============================================================================
+
+# target            title       bg      text        indicator   border
+client.unfocused    $border     $base   $text       $red        $border
+client.focused      $foc_border $foc_bg $foc_text   $red        $foc_border
+client.background   $base
+
+default_border pixel 2
+gaps inner 2
+

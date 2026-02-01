@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+lines="-l 4"
+font="-fn Inconsolata-15"
+colors="-nb #2C323E -nf #9899a0 -sb #BF616A -sf #2C323E"
+
+first_prompt="Pick an Option:"
+opt1="Suspend\nExit Sway\nReboot\nShut Down"
+opt2="Yes\nNo"
+
+ask() {
+    answer="$( echo -e $1 | rofi -dmenu -i -p "$2" $lines)"
+}
+
+ask "$opt1" "$first_prompt"
+
+case $answer in
+    "Suspend")
+        systemctl suspend
+        exit 0
+        ;;
+    "Exit Sway")
+        ask "$opt2" "Are you sure you want to exit sway?"
+        if [[ $answer == "Yes" ]]; then
+            i3-msg exit
+        fi
+        exit 0
+        ;;
+    "Reboot")
+        ask "$opt2" "Are you sure you want to restart?"
+        if [[ $answer == "Yes" ]]; then
+            systemctl reboot
+        fi
+        exit 0
+        ;;
+    "Shut Down")
+        ask "$opt2" "Are you sure you want to shut down?"
+        if [[ $answer == "Yes" ]]; then
+            systemctl poweroff
+        fi
+        exit 0
+        ;;
+esac
+
+exit 0

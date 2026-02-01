@@ -1,0 +1,51 @@
+
+# =============================================================================
+# Input Devices
+# =============================================================================
+
+input type:touchpad {
+    dwt enabled
+    tap enabled
+    natural_scroll enabled
+    middle_emulation enabled
+}
+
+input type:keyboard {
+    xkb_layout "eu"
+}
+
+# =============================================================================
+# Output Devices
+# =============================================================================
+
+output eDP-1 mode 1920x1080@60.0Hz
+output DP-1 mode 2560x1440@165.080Hz
+output DP-2 mode 1920x1080@60.0Hz
+
+# =============================================================================
+# Device Related Keybinds
+# =============================================================================
+
+# Volume keys from pactl
+bindsym --locked XF86AudioMute exec pactl set-sink-mute \@DEFAULT_SINK@ toggle && \
+    exec /home/joel/.config/sway/script/notify_audio.sh
+bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume \@DEFAULT_SINK@ -5% && \
+    exec /home/joel/.config/sway/script/notify_audio.sh
+bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume \@DEFAULT_SINK@ +5% && \
+    exec /home/joel/.config/sway/script/notify_audio.sh
+bindsym --locked XF86AudioMicMute exec pactl set-source-mute \@DEFAULT_SOURCE@ toggle && \
+    exec /home/joel/.config/sway/script/notify_audio.sh
+
+# Play pause
+bindsym --locked XF86AudioPlay exec playerctl play-pause
+bindsym --locked XF86AudioNext exec playerctl next
+bindsym --locked XF86AudioPrev exec playerctl previous
+
+# Brightness keys from brightnessctl
+bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%- && \
+    exec /home/joel/.config/sway/script/notify_bright.sh
+bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+ && \
+    exec /home/joel/.config/sway/script/notify_bright.sh
+
+# Special key to take a screenshot with grim
+bindsym Print exec IMG=~/Pictures/$(date +%Y-%m-%d_%H-%m-%s).png && grim -g "$(slurp)" $IMG && wl-copy < $IMG

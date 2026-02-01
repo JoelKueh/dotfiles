@@ -1,0 +1,21 @@
+
+[global]
+frame_width = 2
+
+[urgency_low]
+background = "#16161d"
+foreground = "#c8c093"
+frame_color = "#54546d"
+highlight = "#54546d"
+
+[urgency_normal]
+background = "#1f1f28"
+foreground = "#dcd7b1"
+frame_color = "#54546d"
+highlight = "#54546d"
+
+[urgency_critical]
+background = "#43242b"
+foreground = "#dcd7ba"
+frame_color = "#ff5d62"
+highlight = "#ff5d62"

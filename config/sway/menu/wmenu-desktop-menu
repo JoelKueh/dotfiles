@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+prompt="-p Launch:"
+j4-dmenu-desktop --dmenu="rofi -dmenu -i -p Launch: -l 15"
+

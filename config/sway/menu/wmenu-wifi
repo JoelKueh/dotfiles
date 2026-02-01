@@ -1,0 +1,9 @@
+#!/bin/bash
+
+selected="$(nmcli connection show | tail -n +2 | \
+            rofi -dmenu -l 15 -i -p "Select network:" | \
+            awk '{print $1}')"; 
+
+if [[ ! -z $selected ]]; then
+    nmcli connection up $selected
+fi

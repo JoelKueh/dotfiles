@@ -1,0 +1,14 @@
+
+set $base #16161D
+set $border #2a2a37
+set $text #c8c093
+
+set $foc_bg #2a2a37
+set $foc_border #54546d
+set $foc_text #d4be98
+
+set $red #ff5d62
+
+set $gray #54546d
+set $light #2a2a37
+
