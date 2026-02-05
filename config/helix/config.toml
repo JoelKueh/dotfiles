@@ -9,3 +9,4 @@ soft-wrap.wrap-at-text-width = true
 
 [keys.normal." "]
 "=" = ":format"
+D = "@vgld"
