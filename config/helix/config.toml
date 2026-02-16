@@ -7,6 +7,11 @@ rulers = [80]
 soft-wrap.enable = true
 soft-wrap.wrap-at-text-width = true
 
+[keys.normal]
+D = "@vgld"
+
 [keys.normal." "]
 "=" = ":format"
-D = "@vgld"
+f = "file_picker_in_current_directory"
+F = "file_picker"
+e = "file_explorer_in_current_directory"

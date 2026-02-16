@@ -3,8 +3,13 @@
 name = "c"
 indent = { tab-width = 4, unit = "    " }
 
+[[language]]
+name = "zig"
+auto-format = false
+
 [language-server.tinymist]
 command = "tinymist"
 config.preview.background.enabled = true
 config.preview.background.args = [
   "--data-plane-host=127.0.0.1:8080", "--invert-colors=never", "--open"]
+
