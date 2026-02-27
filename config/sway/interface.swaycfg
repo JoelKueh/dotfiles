@@ -43,8 +43,8 @@ bar {
 # Wmenu
 # =============================================================================
 
-bindsym $mod+o exec rofi -show drun
-bindsym $mod+p exec rofi -show run
+bindsym $mod+o exec fuzzel
+bindsym $mod+p exec fuzzel -show run
 bindsym $mod+i exec $HOME/.config/sway/menu/wmenu-menus
 
 # =============================================================================

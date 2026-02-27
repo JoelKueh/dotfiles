@@ -11,6 +11,10 @@ auto-format = false
 name = "cpp"
 indent = { tab-width = 4, unit = "\t" }
 
+[[langauge]]
+name = "typst"
+soft-wrap.enable = true
+
 [language-server.tinymist]
 command = "tinymist"
 config.preview.background.enabled = true

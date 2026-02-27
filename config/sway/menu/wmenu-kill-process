@@ -4,12 +4,12 @@
 lines="-l 20"
 
 selected="$(ps -a -u $USER | \
-            rofi -dmenu -i -p "Process:" $lines | \
+            fuzzel --dmenu -i -p "Process:" $lines | \
             awk '{print $1" "$4}')"; 
 
 if [[ ! -z $selected ]]; then
     answer="$(echo -e "Yes\nNo" | \
-            rofi -dmenu -i -p "Kill $selected?" -l 2)"
+            fuzzel --dmenu -i -p "Kill $selected?" -l 2)"
     if [[ $answer == "Yes" ]]; then
         selpid="$(awk '{print $1}' <<< $selected)"; 
         kill -9 $selpid

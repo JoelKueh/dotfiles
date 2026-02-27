@@ -9,7 +9,7 @@ opt1="Suspend\nExit Sway\nReboot\nShut Down"
 opt2="Yes\nNo"
 
 ask() {
-    answer="$( echo -e $1 | rofi -dmenu -i -p "$2" $lines)"
+    answer="$( echo -e $1 | fuzzel --dmenu -i -p "$2" $lines)"
 }
 
 ask "$opt1" "$first_prompt"

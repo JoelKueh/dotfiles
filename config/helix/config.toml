@@ -3,9 +3,7 @@ theme = "kanagawa-nbg"
 [editor]
 line-number = "relative"
 mouse = false
-rulers = [80]
-soft-wrap.enable = true
-soft-wrap.wrap-at-text-width = true
+rulers = [100]
 
 [keys.normal]
 D = "@vgld"

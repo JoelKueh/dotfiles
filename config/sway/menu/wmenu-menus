@@ -13,7 +13,7 @@ run_dmenu="$(find $script_path/wmenu-* -maxdepth 1 -type f -executable \
           -exec grep -Iq . {} \; -print \
           | sed 's|^'$script_path/'||' \
           | sort \
-          | rofi -dmenu $prompt -l 8)"
+          | fuzzel --dmenu $prompt -l 8)"
 
 eval "$script_path/$run_dmenu"
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
 prompt="-p Launch:"
-j4-dmenu-desktop --dmenu="rofi -dmenu -i -p Launch: -l 15"
+fuzzel
+#j4-dmenu-desktop --dmenu="fuzzel --dmenu -i -p Launch: -l 15"
 
