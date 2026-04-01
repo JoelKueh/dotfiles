@@ -13,6 +13,7 @@ indent = { tab-width = 4, unit = "\t" }
 
 [[langauge]]
 name = "typst"
+file-types = ["typ"]
 soft-wrap.enable = true
 
 [language-server.tinymist]
