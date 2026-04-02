@@ -1,7 +1,8 @@
 
 [[language]]
 name = "c"
-indent = { tab-width = 4, unit = "    " }
+file-types = ["c", "h"]
+indent = { tab-width = 4, unit = "\t" }
 
 [[language]]
 name = "zig"
@@ -11,14 +12,33 @@ auto-format = false
 name = "cpp"
 indent = { tab-width = 4, unit = "\t" }
 
-[[langauge]]
+[[language]]
 name = "typst"
+scope = "source.typst"
 file-types = ["typ"]
 soft-wrap.enable = true
+soft-wrap.wrap-at-text-width = true
+soft-wrap.max-wrap = 100
+text-width = 100
+language-servers = ["tinymist", "typos"]
+
+[[language]]
+name = "markdown"
+file-types = ["md"]
+soft-wrap.enable = true
+soft-wrap.wrap-at-text-width = true
+soft-wrap.max-wrap = 100
+text-width = 100
+language-servers = ["typos"]
 
 [language-server.tinymist]
 command = "tinymist"
 config.preview.background.enabled = true
 config.preview.background.args = [
-  "--data-plane-host=127.0.0.1:8080", "--invert-colors=never", "--open"]
+  "--data-plane-host=127.0.0.1:0", "--invert-colors=never", "--open"]
 
+[language-server.typos]
+command = "typos-lsp"
+environment = {"RUST_LOG" = "error"}
+config.config = "~/code/typos-lsp/crates/typos-lsp/tests/typos.toml"
+config.diagnosticSeverity = "Info"
