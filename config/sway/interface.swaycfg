@@ -58,4 +58,10 @@ client.background   $base
 
 default_border pixel 2
 gaps inner 2
+exec_always ~/.config/sway/script/autotiling
 
+# =============================================================================
+# Polkit Authentication
+# =============================================================================
+
+exec /usr/libexec/polkit-mate-authentication-agent-1

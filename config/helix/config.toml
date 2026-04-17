@@ -4,6 +4,7 @@ theme = "kanagawa-nbg"
 line-number = "relative"
 mouse = false
 rulers = [100]
+auto-pairs = false
 
 [keys.normal]
 D = "@vgld"
