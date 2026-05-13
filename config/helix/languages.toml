@@ -81,3 +81,6 @@ args = [ "--synctex-forward", "%l:%c:%f", "%p" ]
 [language-server.texlab.config.texlab.chktex]
 onOpenAndSave = true
 onEdit = true
+
+[language-server.zls]
+command = "/home/joel/.zvm/bin/zls"
