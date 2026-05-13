@@ -13,6 +13,15 @@ name = "cpp"
 indent = { tab-width = 4, unit = "\t" }
 
 [[language]]
+name = "markdown"
+file-types = ["md"]
+soft-wrap.enable = true
+soft-wrap.wrap-at-text-width = true
+soft-wrap.max-wrap = 100
+text-width = 100
+language-servers = ["typos"]
+
+[[language]]
 name = "typst"
 scope = "source.typst"
 file-types = ["typ"]
@@ -23,13 +32,14 @@ text-width = 100
 language-servers = ["tinymist", "typos"]
 
 [[language]]
-name = "markdown"
-file-types = ["md"]
+name = "latex"
+scope = "source.latex"
+file-types = ["tex"]
 soft-wrap.enable = true
 soft-wrap.wrap-at-text-width = true
 soft-wrap.max-wrap = 100
 text-width = 100
-language-servers = ["typos"]
+language-servers = ["texlab", "typos"]
 
 [language-server.tinymist]
 command = "tinymist"
@@ -42,3 +52,26 @@ command = "typos-lsp"
 environment = {"RUST_LOG" = "error"}
 config.config = "~/code/typos-lsp/crates/typos-lsp/tests/typos.toml"
 config.diagnosticSeverity = "Info"
+
+[language-server.texlab]
+command = "texlab"
+
+[language-server.texlab.config.texlab.build]
+onSave = true
+forwardSearchAfter = true
+executable = "latexmk"
+args = [
+  "-lualatex", 
+  "-interaction=nonstopmode", 
+  "-synctex=1", 
+  "-shell-escape", 
+  "%f"
+]
+
+[language-server.texlab.config.texlab.forwardSearch]
+executable = "zathura"
+args = [ "--synctex-forward", "%l:%c:%f", "%p" ]
+
+[language-server.texlab.config.texlab.chktex]
+onOpenAndSave = true
+onEdit = true
