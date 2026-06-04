@@ -7,6 +7,7 @@ Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'prabirshrestha/vim-lsp'
 Plug 'menisadi/kanagawa.vim'
 call plug#end()
 
@@ -45,12 +46,26 @@ elseif executable('fd')
 endif
 
 " Language server setup
+let g:lsp_diagnostics_enabled = 1
+let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_diagnostics_virtual_text_enabled = 1
+let g:lsp_diagnostics_virtual_text_align = 'right' " or 'below'
+
 if executable('pylsp')
     " pip install python-lsp-server
     au User lsp_setup call lsp#register_server({
         \ 'name': 'pylsp',
         \ 'cmd': {server_info->['pylsp']},
         \ 'allowlist': ['python'],
+        \ })
+endif
+
+if executable('clangd')
+    " pip install python-lsp-server
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'clangd',
+        \ 'cmd': {server_info->['clangd']},
+        \ 'allowlist': ['c', 'cpp'],
         \ })
 endif
 
@@ -77,32 +92,3 @@ augroup lsp_install
     " call s:on_lsp_buffer_enabled only for languages that has the server registered.
     autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
 augroup END
-
-function! s:on_lsp_buffer_enabled() abort
-    " Enable semantic highlights if the server supports it
-    let g:lsp_semantic_text_tokens_enabled = 1
-
-    " Map standard semantic categories to basic Vim syntax colors
-    highlight link LspType                  Type
-    highlight link LspClass                 StorageClass
-    highlight link LspStruct                Structure
-    highlight link LspParameter             Identifier
-    highlight link LspVariable              Identifier
-    highlight link LspProperty              Identifier
-    highlight link LspEnumMember            Constant
-    highlight link LspFunction              Function
-    highlight link LspMethod                Function
-    highlight link LspMacro                 Macro
-    highlight link LspKeyword               Keyword
-    highlight link LspComment               Comment
-    highlight link LspString                String
-    highlight link LspNumber                Number
-    highlight link LspRegexp                String
-    highlight link LspOperator              Operator
-endfunction
-
-augroup lsp_colors
-    autocmd!
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup END
-
