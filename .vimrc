@@ -52,7 +52,6 @@ let g:lsp_diagnostics_virtual_text_enabled = 1
 let g:lsp_diagnostics_virtual_text_align = 'right' " or 'below'
 
 if executable('pylsp')
-    " pip install python-lsp-server
     au User lsp_setup call lsp#register_server({
         \ 'name': 'pylsp',
         \ 'cmd': {server_info->['pylsp']},
@@ -60,8 +59,15 @@ if executable('pylsp')
         \ })
 endif
 
+if executable('verible-verilog-ls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'verible',
+        \ 'cmd': {server_info->['verible-verilog-ls']},
+        \ 'allowlist': ['verilog', 'systemverilog'],
+        \ })
+endif
+
 if executable('clangd')
-    " pip install python-lsp-server
     au User lsp_setup call lsp#register_server({
         \ 'name': 'clangd',
         \ 'cmd': {server_info->['clangd']},
