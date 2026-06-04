@@ -41,6 +41,12 @@ soft-wrap.max-wrap = 100
 text-width = 100
 language-servers = ["texlab", "typos"]
 
+[[language]]
+name = "verilog"
+scope = "source.verilog"
+file-types = ["sv", "svh", "v", "vh", "vg"]
+indent = { tab-width = 2, unit = "  " }
+
 [language-server.tinymist]
 command = "tinymist"
 config.preview.background.enabled = true
