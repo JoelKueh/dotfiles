@@ -12,36 +12,35 @@ vim.pack.add({
   'https://github.com/dgagn/diagflow.nvim',             -- Helix-style diagnostics
 })
 
+local utils = require("utils")
+
 -- Generic Configuration
 vim.cmd[[colorscheme kanagawa]]
 vim.g.mapleader = " "
 vim.opt.number = true
 vim.opt.relativenumber = true
-
--- Helpful picker to mimic the helix current file file picker
-local function find_files_relative()
-  local current_file = vim.api.nvim_buf_get_name(0)
-  if current_file == "" then
-    tsbuiltin.find_files()
-    return
-  end
-
-  local current_dir = vim.fs.dirname(current_file)
-  tsbuiltin.find_files({
-    cwd = current_dir,
-    prompt_title = "Find Files (Relative: " .. vim.fs.basename(current_dir) .. ")",
-  })
-end
+vim.opt.scrolloff = 8
 
 -- Vim Keybind Configuration
-vim.keymap.set({'n', 'v'}, 'ge', 'G', { desc = 'Last line' });
-vim.keymap.set({'n', 'v'}, 'gl', '$', { desc = 'End of line' });
-vim.keymap.set({'n', 'v'}, 'gh', '0', { desc = 'Beginning of line' });
-vim.keymap.set('n', '<leader>c', 'gcc', { remap = true, desc = 'Toggle comment' });
-vim.keymap.set('v', '<leader>c', 'gc', { remap = true, desc = 'Toggle comment selection' });
-vim.keymap.set('v', '<leader>y', '"+y', { remap = true, desc = 'Yank selection to clipboard' });
-vim.keymap.set({'n', 'v'}, '<leader>p', '"+y', { remap = true, desc = 'Paste clipboard after selection' });
-vim.keymap.set({'n', 'v'}, '<leader>P', '"+y', { remap = true, desc = 'Paste clipboard before selection' });
+--- Keybinds for jumping around places
+vim.keymap.set({'n', 'v'}, 'ge', 'G')
+vim.keymap.set({'n', 'v'}, 'gl', '$')
+vim.keymap.set({'n', 'v'}, 'gh', '0')
+vim.keymap.set({'n', 'v'}, 'gs', '^')
+--- Comment Keybinds
+vim.keymap.set('n', '<leader>c', 'gcc', { remap = true, desc = 'Toggle comment' })
+vim.keymap.set('v', '<leader>c', 'gc', { remap = true, desc = 'Toggle comment selection' })
+--- Clipboard Keybinds
+vim.keymap.set('v', '<leader>y', '"+y', { remap = true, desc = 'Yank selection to clipboard' })
+vim.keymap.set({'n', 'v'}, '<leader>p', '"+y', { remap = true, desc = 'Paste clipboard after selection' })
+vim.keymap.set({'n', 'v'}, '<leader>P', '"+y', { remap = true, desc = 'Paste clipboard before selection' })
+
+-- These keybinds are nasty
+vim.keymap.del('n', 'gO')
+vim.keymap.del('n', 'gx')
+vim.keymap.set('n', 'g%', '<Nop>')
+vim.keymap.set('n', 'g;', '<Nop>')
+vim.keymap.set('n', 'g,', '<Nop>')
 
 -- Which Key Configuration
 local whichkey = require("which-key")
@@ -65,30 +64,25 @@ whichkey.add({
     {'<leader>k', vim.lsp.buf.hover, desc = 'Show docs for item under cursor'},
     {'<leader>r', vim.lsp.buf.rename, desc = 'Rename symbol'},
     {'<leader>?', whichkey.show, desc = 'Show keybinds'},
+
+    {'g', name = 'Goto', group = 'Goto'},
+    {'gg', desc = 'Goto line number <n> else file start'},
+    {'gf', desc = 'Goto file in selection'},
+    {'gh', desc = 'Goto line start'},
+    {'gl', desc = 'Goto line end'},
+    {'gs', desc = 'Goto first non-blank in line'},
+    {'gd', tsbuiltin.lsp_definition, desc = 'Goto definition'},
+    {'gD', tsbuiltin.lsp_declaration, desc = 'Goto declaration'},
+    {'gr', tsbuiltin.lsp_references, desc = 'Goto references'},
+    {'gi', tsbuiltin.lsp_implementation, desc = 'Goto implementation'},
+    {'gv', desc = 'Goto last visual selection'},
+    {'gw', helix_flash_jump, desc = 'Jump to a two-character label'},
+    {'gu', desc = 'Make lowercase in motion'},
+    {'gU', desc = 'Make uppercase in motion'},
+    {'g~', desc = 'Toggle case in motion'},
+    {'g%', hidden = true},
+    {'g;', hidden = true},
+    {'g,', hidden = true},
+
+    {'z<CR>', hidden = true},
 })
-
--- Diagflow Diagnostic Configuration
-local diagflow = require("diagflow")
-diagflow.setup({
-    scope = 'cursor',
-    position = 'top_right',
-})
-
--- Lsp Global Configuration
-vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(args)
-    -- Get the lsp client that attached
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if not client then return end
-
-    -- Enable autocompletion
-    if client:supports_method('textDocument/completion') then
-      vim.lsp.completion.enable(true, client.id, args.buf)
-    end
-  end
-})
-
--- Custom Lsp Configuration
-vim.lsp.config('lua_ls', {settings = { Lua = { diagnostics = { globals = { 'vim' }}}}})
-vim.lsp.enable({ 'clangd', 'lua_ls' })
-
