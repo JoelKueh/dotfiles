@@ -13,6 +13,7 @@ vim.pack.add({
 })
 
 local utils = require("utils")
+local lsp = require("lsp")
 
 -- Generic Configuration
 vim.cmd[[colorscheme kanagawa]]
@@ -71,10 +72,9 @@ whichkey.add({
     {'gh', desc = 'Goto line start'},
     {'gl', desc = 'Goto line end'},
     {'gs', desc = 'Goto first non-blank in line'},
-    {'gd', tsbuiltin.lsp_definition, desc = 'Goto definition'},
-    {'gD', tsbuiltin.lsp_declaration, desc = 'Goto declaration'},
+    {'gd', tsbuiltin.lsp_definitions, desc = 'Goto definition'},
     {'gr', tsbuiltin.lsp_references, desc = 'Goto references'},
-    {'gi', tsbuiltin.lsp_implementation, desc = 'Goto implementation'},
+    {'gi', tsbuiltin.lsp_implementations, desc = 'Goto implementation'},
     {'gv', desc = 'Goto last visual selection'},
     {'gw', helix_flash_jump, desc = 'Jump to a two-character label'},
     {'gu', desc = 'Make lowercase in motion'},
