@@ -1,11 +1,21 @@
 
+# Autocompletion and autosuggestions
+autoload -Uz compinit && compinit
 export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 export ZSH_AUTOSUGGEST_USE_ASYNC=1
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
-export ZSH_AUTOSUGGEST_STRATEGY=(completion history)
-
+export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# Prompt customization
+autoload -Uz vcs_info
+precmd() { vcs_info }
+zstyle ':vcs_info:git:*' formats ' (%b)'
+zstyle ':vcs_info:*' enable git
+setopt PROMPT_SUBST
+zsh_prompt_short_path() { print -P '%~' | sed -E 's|([^/])[^/]*/|\1/|g' }
+PROMPT='[%n@%m]$(zsh_prompt_short_path)${vcs_info_msg_0_}%# '
 
 # Fish style word skipping
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
@@ -29,3 +39,15 @@ alias vim="$EDITOR"
 alias vi="$EDITOR"
 alias v="$EDITOR"
 
+alias ll="ls -l"
+alias la="ls -la"
+
+alias gs="git status"
+alias ga="git add"
+alias gc="git commit"
+alias gp="git push"
+alias gl="git log --oneline --graph --decorate"
+
+alias ll="ls -l"
+alias la="ls -la"
+alias h="history | grep"
