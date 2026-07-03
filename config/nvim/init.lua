@@ -10,6 +10,7 @@ vim.pack.add({
   'https://github.com/nvim-lua/plenary.nvim',           -- Rendering utilities used by telescope
   'https://github.com/neovim/nvim-lspconfig',           -- Auto configuration for common lsps
   'https://github.com/dgagn/diagflow.nvim',             -- Helix-style diagnostics
+  'https://github.com/sindrets/diffview.nvim',          -- Tabbed diff view
 })
 
 local utils = require("utils")
@@ -21,6 +22,8 @@ vim.g.mapleader = " "
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.scrolloff = 8
+vim.opt.colorcolumn = "100"
+vim.opt.guicursor = "a:block"
 
 -- Vim Keybind Configuration
 --- Keybinds for jumping around places
@@ -73,7 +76,7 @@ whichkey.add({
     {'gl', desc = 'Goto line end'},
     {'gs', desc = 'Goto first non-blank in line'},
     {'gd', tsbuiltin.lsp_definitions, desc = 'Goto definition'},
-    {'gr', tsbuiltin.lsp_references, desc = 'Goto references'},
+    {'gr', tsbuiltin.lsp_references, desc = 'Goto references', nowait = true},
     {'gi', tsbuiltin.lsp_implementations, desc = 'Goto implementation'},
     {'gv', desc = 'Goto last visual selection'},
     {'gw', helix_flash_jump, desc = 'Jump to a two-character label'},
@@ -85,4 +88,13 @@ whichkey.add({
     {'g,', hidden = true},
 
     {'z<CR>', hidden = true},
+})
+
+-- Other Plugin Configuration
+require("diffview").setup({
+  use_icons = false, -- Disables special character icons
+  signs = {
+    fold_closed = "+", -- Standard ASCII replacement for closed folds
+    fold_open = "-",   -- Standard ASCII replacement for open folds
+  }
 })
