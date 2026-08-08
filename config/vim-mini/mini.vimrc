@@ -14,6 +14,7 @@ if has('termguicolors')
   set termguicolors
 endif
 
+colo kanagawa
 let mapleader = " "
 set path+=**
 set hidden

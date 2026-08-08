@@ -19,3 +19,18 @@
 [submodule "config/vim-mini/mini.vim/pack/plugins/start/indentline"]
 	path = config/vim-mini/mini.vim/pack/plugins/start/indentline
 	url = https://github.com/yggdroot/indentline.git
+[submodule "config/vim-mini/mini.vim/pack/plugins/start/vim-fugitive"]
+	path = config/vim-mini/mini.vim/pack/plugins/start/vim-fugitive
+	url = https://github.com/tpope/vim-fugitive.git
+[submodule "config/vim-mini/mini.vim/pack/plugins/start/vim-surround"]
+	path = config/vim-mini/mini.vim/pack/plugins/start/vim-surround
+	url = https://github.com/tpope/vim-surround.git
+[submodule "config/vim-mini/mini.vim/pack/plugins/start/vim-commentary"]
+	path = config/vim-mini/mini.vim/pack/plugins/start/vim-commentary
+	url = https://github.com/tpope/vim-commentary.git
+[submodule "config/vim-mini/mini.vim/pack/plugins/start/vim-sensible"]
+	path = config/vim-mini/mini.vim/pack/plugins/start/vim-sensible
+	url = https://github.com/tpope/vim-sensible.git
+[submodule "config/vim-mini/mini.vim/pack/plugins/start/vim-easy-align"]
+	path = config/vim-mini/mini.vim/pack/plugins/start/vim-easy-align
+	url = https://github.com/junegunn/vim-easy-align.git

@@ -1,5 +1,6 @@
 
 # Autocompletion and autosuggestions
+autoload -U colors && colors
 autoload -Uz compinit && compinit
 export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 export ZSH_AUTOSUGGEST_USE_ASYNC=1
@@ -29,6 +30,17 @@ bindkey '^H'      backward-kill-word # ctrl + h: delete previous word
 bindkey '^[^?'    backward-kill-word # ctrl + backsapce: delete previous word
 bindkey '^[[3;5~' kill-word          # ctrl + delete: delete subsequent word
 
+# Colors
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
 # Set default editor
 if command -v nvim >/dev/null 2>&1; then
     export EDITOR='nvim'
@@ -39,6 +51,7 @@ alias vim="$EDITOR"
 alias vi="$EDITOR"
 alias v="$EDITOR"
 
+# More Aliases
 alias ll="ls -l"
 alias la="ls -la"
 
