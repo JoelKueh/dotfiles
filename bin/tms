@@ -1,0 +1,20 @@
+#!/usr/bin/bash
+
+SRC_DIR="$HOME/src"
+
+pick_child() {
+	echo "$(find "$(realpath $1)" -mindepth 1 -maxdepth 1 -xtype d | sort |
+		fzf --prompt="project > " --height=40% --reverse
+	)"
+}
+
+project="$(pick_child $SRC_DIR)"
+[ -z "${project:-}" ] && exit 0
+project="$(pick_child $project)"
+[ -z "${project:-}" ] && exit 0
+
+session="$(basename "$project" | tr '.:' '__')"
+if ! tmux has-session -t "$session" 2>/dev/null; then
+	tmux new-session -d -s "$session" -c "$project"
+fi
+tmux switch-client -t "$session" 2>/dev/null || tmux attach -t "$session"
