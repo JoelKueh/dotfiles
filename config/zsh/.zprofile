@@ -5,5 +5,5 @@ export PATH=$HOME/.local/:$PATH
 export PATH=$PATH:$HOME/.cargo/bin
 
 # Other environment variable configuration
-if [[ -e '/opt/riscv' ]]; export RISCV=/opt/riscv; fi
+[[ -e '/opt/riscv' ]] && export RISCV=/opt/riscv
 export _JAVA_AWT_WM_NONREPARENTING=1
