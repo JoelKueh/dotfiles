@@ -11,6 +11,7 @@ vim.pack.add({
   'https://github.com/neovim/nvim-lspconfig',           -- Auto configuration for common lsps
   'https://github.com/dgagn/diagflow.nvim',             -- Helix-style diagnostics
   'https://github.com/sindrets/diffview.nvim',          -- Tabbed diff view
+  'https://github.com/chomosuke/typst-preview.nvim',    -- Typst preview
 })
 
 local utils = require("utils")
