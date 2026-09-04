@@ -64,3 +64,10 @@ alias gl="git log --oneline --graph --decorate"
 alias ll="ls -l"
 alias la="ls -la"
 alias h="history | grep"
+
+# opencode
+export PATH=/home/joel/.opencode/bin:$PATH
+
+# Qwen Code PATH block begin
+export PATH='/home/joel/.local/bin':$PATH
+# Qwen Code PATH block end

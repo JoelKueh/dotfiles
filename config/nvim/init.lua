@@ -25,6 +25,9 @@ vim.opt.relativenumber = true
 vim.opt.scrolloff = 8
 vim.opt.colorcolumn = "100"
 vim.opt.guicursor = "a:block"
+vim.opt.tabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = false
 
 -- Vim Keybind Configuration
 --- Keybinds for jumping around places
