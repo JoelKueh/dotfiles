@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+prompt="-p Launch:"
+fuzzel
+#j4-dmenu-desktop --dmenu="fuzzel --dmenu -i -p Launch: -l 15"
+

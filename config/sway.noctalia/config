@@ -1,0 +1,13 @@
+
+# Include all of the other files for the config.
+include ./variables.swaycfg
+include ./apps.swaycfg
+include ./keybinds.swaycfg
+include ./input.swaycfg
+include ./devices.swaycfg
+include ./interface.swaycfg
+include ./exec.swaycfg
+
+# Include default configuration files.
+include /etc/sway/config.d/*
+

@@ -1,0 +1,11 @@
+
+include ./colors.swaycfg
+
+# target            title       bg      text        indicator   border
+client.unfocused    $border     $base   $text       $red        $border
+client.focused      $foc_border $foc_bg $foc_text   $red        $foc_border
+client.background   $base
+
+default_border pixel 2
+gaps inner 2
+exec_always ~/.config/sway/script/autotiling
