@@ -95,8 +95,12 @@ hl.bind(vars.mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true }
 -- =============================================================================
 
 -- Launchers
+hl.bind(vars.mainMod .. " + I", hl.dsp.exec_cmd("noctalia msg panel-toggle session"))
 hl.bind(vars.mainMod .. " + O", hl.dsp.exec_cmd("noctalia msg panel-toggle launcher"))
-hl.bind(vars.mainMod .. " + I", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center"))
+hl.bind(vars.mainMod .. " + P", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center"))
+hl.bind(vars.mainMod .. " + N", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center notifications"))
+hl.bind(vars.mainMod .. " + M", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center media"))
+hl.bind(vars.mainMod .. " + C", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center calendar"))
 hl.bind(vars.mainMod .. " + COMMA", hl.dsp.exec_cmd("noctalia msg settings-toggle"))
 
 -- Volume
@@ -112,5 +116,9 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("noctalia msg brightness-down")
 -- Media
 hl.bind("XF86AudioPause",  hl.dsp.exec_cmd("noctalia msg media pause"), { locked = true })
 hl.bind("XF86AudioPlay",  hl.dsp.exec_cmd("noctalia msg media toggle"), { locked = true })
-hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("noctalia msg media next"), { locked = true })
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("noctalia msg media previous"), { locked = true })
+hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("noctalia msg media next"), { locked = true })
+hl.bind(vars.mainMod .. " + bracketleft",  hl.dsp.exec_cmd("noctalia msg media previous-player"), { locked = true })
+hl.bind(vars.mainMod .. " + bracketright",  hl.dsp.exec_cmd("noctalia msg media next-player"), { locked = true })
+
+-- Other

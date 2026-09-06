@@ -73,6 +73,9 @@ widget_order = [ "lockscreen-login-box@DP-1", "lockscreen-login-box@DP-2" ]
 [shell]
 polkit_agent = true
 
+    [shell.animation]
+    speed = 2.0000000298023224
+
 [theme]
 builtin = "Kanagawa"
 community_palette = "Nord Aurora"
