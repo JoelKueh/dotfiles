@@ -121,4 +121,6 @@ hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("noctalia msg media next"), { locked =
 hl.bind(vars.mainMod .. " + bracketleft",  hl.dsp.exec_cmd("noctalia msg media previous-player"), { locked = true })
 hl.bind(vars.mainMod .. " + bracketright",  hl.dsp.exec_cmd("noctalia msg media next-player"), { locked = true })
 
--- Other
+-- Screenshot
+hl.bind("Print", hl.dsp.exec_cmd("noctalia msg screenshot-region"), { locked = true })
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd("noctalia msg screenshot-fullscreen all"), { locked = true })
