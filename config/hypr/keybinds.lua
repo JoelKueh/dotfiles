@@ -73,7 +73,7 @@ hl.bind(vars.mainMod .. " + MINUS", hl.dsp.workspace.toggle_special("scratchpad"
 hl.bind(vars.mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(vars.mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("hyprshutdown"))
 hl.bind(vars.mainMod .. " + RETURN", hl.dsp.exec_cmd(vars.terminal))
-hl.bind(vars.mainMod .. " + SHIFT + Q", hl.dsp.window.kill())
+hl.bind(vars.mainMod .. " + SHIFT + Q", hl.dsp.window.close())
 hl.bind(vars.mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
 
 -- Move focus with vars.mainMod + arrow keys
