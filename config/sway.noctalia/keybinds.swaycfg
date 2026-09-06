@@ -76,8 +76,8 @@ floating_modifier $mod normal
 
 # TODO: Update me to fix launchers.
 # Noctalia utilities.
-bindsym $mod+space exec $ipc panel-toggle launcher
-bindsym $mod+s exec $ipc panel-toggle control-center
+bindsym $mod+o exec $ipc panel-toggle launcher
+bindsym $mod+i exec $ipc panel-toggle control-center
 bindsym $mod+comma exec $ipc settings-toggle
 
 # Media keys

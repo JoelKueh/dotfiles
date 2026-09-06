@@ -11,3 +11,6 @@ include ./exec.swaycfg
 # Include default configuration files.
 include /etc/sway/config.d/*
 
+
+# Include sway noctalia settings.
+include ~/.config/sway/noctalia
