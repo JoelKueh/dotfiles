@@ -2,6 +2,7 @@
 -- Plugin Installation
 vim.pack.add({
   'https://github.com/rebelot/kanagawa.nvim',           -- Cool colorscheme
+  'https://github.com/rose-pine/neovim',                -- Other cool color scheme
   'https://github.com/folke/flash.nvim',                -- Helix-style word jump motions
   'https://github.com/folke/which-key.nvim',            -- Key mapping reference tool
   'https://github.com/nvim-telescope/telescope.nvim',   -- File picker (maybe try folke/snacks)
@@ -18,7 +19,8 @@ local utils = require("utils")
 local lsp = require("lsp")
 
 -- Generic Configuration
-vim.cmd[[colorscheme kanagawa]]
+-- vim.cmd[[colorscheme kanagawa]]
+-- vim.cmd[[colorscheme rose_pine]]
 vim.g.mapleader = " "
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -66,6 +68,7 @@ whichkey.add({
     {'<leader>S', tsbuiltin.lsp_workspace_symbols, desc = 'Open workspace symbol picker'},
     {'<leader>d', tsbuiltin.diagnostics, desc = 'Open diagnostic picker'},
     {'<leader>D', tsbuiltin.lsp_workspace_diagnostics, desc = 'Open workspace diagnostic picker'},
+    {'<leader>m', tsbuiltin.colorscheme, desc = 'Open colorscheme picker'},
     {'<leader>/', tsbuiltin.live_grep, desc = 'Global search in workspace folder'},
 
     {'<leader>w', proxy = '<c-w>', group = "Window"},
