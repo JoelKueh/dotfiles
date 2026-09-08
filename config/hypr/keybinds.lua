@@ -122,5 +122,5 @@ hl.bind(vars.mainMod .. " + bracketleft",  hl.dsp.exec_cmd("noctalia msg media p
 hl.bind(vars.mainMod .. " + bracketright",  hl.dsp.exec_cmd("noctalia msg media next-player"), { locked = true })
 
 -- Screenshot
-hl.bind("Print", hl.dsp.exec_cmd("noctalia msg screenshot-region"), { locked = true })
-hl.bind("SHIFT + Print", hl.dsp.exec_cmd("noctalia msg screenshot-fullscreen all"), { locked = true })
+hl.bind("Print", hl.dsp.exec_cmd("noctalia msg screenshot-region"))
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd("noctalia msg screenshot-fullscreen all"))

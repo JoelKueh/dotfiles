@@ -35,9 +35,6 @@ bindsym $mod+8 workspace number 8
 bindsym $mod+9 workspace number 9
 bindsym $mod+0 workspace number 10
 
-bindcode $mod+60 workspace next
-bindcode $mod+59 workspace prev
-
 bindsym $mod+Shift+1 move container to workspace number 1
 bindsym $mod+Shift+2 move container to workspace number 2
 bindsym $mod+Shift+3 move container to workspace number 3
@@ -74,18 +71,30 @@ floating_modifier $mod normal
 # Utility
 # =============================================================================
 
-# TODO: Update me to fix launchers.
-# Noctalia utilities.
+# Noctalia
+bindsym $mod+i exec $ipc panel-toggle session
 bindsym $mod+o exec $ipc panel-toggle launcher
-bindsym $mod+i exec $ipc panel-toggle control-center
+bindsym $mod+p exec $ipc panel-toggle control-center
+bindsym $mod+n exec $ipc panel-toggle control-center notifications
+bindsym $mod+m exec $ipc panel-toggle control-center media
+bindsym $mod+c exec $ipc panel-toggle control-center calendar
 bindsym $mod+comma exec $ipc settings-toggle
 
-# Media keys
+# Media
 bindsym --locked XF86AudioRaiseVolume exec $ipc volume-up
 bindsym --locked XF86AudioLowerVolume exec $ipc volume-down
 bindsym --locked XF86AudioMute exec $ipc volume-mute
+bindsym --locked XF86AudioMicMute exec $ipc mic-mute
+bindsym --locked $mod+bracketleft exec $ipc media previous-player
+bindsym --locked $mod+bracketright exec $ipc media next-player
+
+# Brightness
 bindsym --locked XF86MonBrightnessUp exec $ipc brightness-up
 bindsym --locked XF86MonBrightnessDown exec $ipc brightness-down
+
+# Screenshot
+bindsym Print exec $ipc screenshot-region
+bindsym Shift+Print exec $ipc screenshot-region
 
 # =============================================================================
 # Execs

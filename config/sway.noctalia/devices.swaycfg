@@ -13,3 +13,5 @@ input type:touchpad {
 input type:keyboard {
     xkb_layout "eu"
 }
+
+output eDP-1 scale 1.5

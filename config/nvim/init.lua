@@ -20,7 +20,7 @@ local lsp = require("lsp")
 
 -- Generic Configuration
 -- vim.cmd[[colorscheme kanagawa]]
--- vim.cmd[[colorscheme rose_pine]]
+vim.cmd[[colorscheme rose-pine]]
 vim.g.mapleader = " "
 vim.opt.number = true
 vim.opt.relativenumber = true

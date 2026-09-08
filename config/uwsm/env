@@ -1,4 +1,6 @@
+[[ -e '/opt/riscv' ]] && export RISCV=/opt/riscv
 export XCURSOR_SIZE=24
 export HYPRCURSOR_SIZE=24
 export QT_QPA_PLATFORM=wayland
 export QT_QPA_PLATFORMTHEME=qt6ct
+export _JAVA_AWT_WM_NONREPARENTING=1
