@@ -79,6 +79,7 @@ bindsym $mod+n exec $ipc panel-toggle control-center notifications
 bindsym $mod+m exec $ipc panel-toggle control-center media
 bindsym $mod+c exec $ipc panel-toggle control-center calendar
 bindsym $mod+comma exec $ipc settings-toggle
+bindsym Alt+Tab exec $ipc window-switcher
 
 # Media
 bindsym --locked XF86AudioRaiseVolume exec $ipc volume-up

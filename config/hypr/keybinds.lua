@@ -102,6 +102,7 @@ hl.bind(vars.mainMod .. " + N", hl.dsp.exec_cmd("noctalia msg panel-toggle contr
 hl.bind(vars.mainMod .. " + M", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center media"))
 hl.bind(vars.mainMod .. " + C", hl.dsp.exec_cmd("noctalia msg panel-toggle control-center calendar"))
 hl.bind(vars.mainMod .. " + COMMA", hl.dsp.exec_cmd("noctalia msg settings-toggle"))
+hl.bind("ALT + COMMA", hl.dsp.exec_cmd("noctalia msg window-switcher"))
 
 -- Volume
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("noctalia msg volume-up"), { locked = true })
