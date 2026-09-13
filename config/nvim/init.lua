@@ -18,6 +18,7 @@ vim.pack.add({
 local utils = require("utils")
 local lsp = require("lsp")
 require("ltspice").setup({})
+require("screenshot").setup({})
 
 -- Generic Configuration
 -- vim.cmd[[colorscheme kanagawa]]

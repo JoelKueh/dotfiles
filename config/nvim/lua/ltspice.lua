@@ -22,6 +22,7 @@ local function schematic_paths(name)
         return nil
     end
 
+    -- TODO: Maybe this shouldn't be the current buffer and should be cwd.
     local root = vim.fn.expand('%:p:h')
     local directory = vim.fs.joinpath(root, M.config.directory, name)
 
