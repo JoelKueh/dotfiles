@@ -14,16 +14,14 @@ local function notify(msg, level)
     vim.notify(msg, level or vim.log.levels.INFO, { title = "LTspice" })
 end
 
--- Validate specified name.
-local function name_valid(name)
-    if name == "" or name == "." or name == ".." then 
-        return false 
-    end
-    return name:match("^[%w%.%-_]+$") ~= nil
-end
-
 -- Function to return the paths to the schematic files by name.
 local function schematic_paths(name)
+    if name == "" or name == "." or name == ".." then 
+        return nil 
+    elseif name:match("^[%w%.%-_]+$") == nil then
+        return nil
+    end
+
     local root = vim.fn.expand('%:p:h')
     local directory = vim.fs.joinpath(root, M.config.directory, name)
 
@@ -36,37 +34,6 @@ local function schematic_paths(name)
         latex_ext = vim.fs.joinpath(root, M.config.directory, "latex_ext.tex"),
         preamble = vim.fs.joinpath(root, M.config.directory, "preamble.tex"),
     }
-end
-
--- Convert the modified .asc file to a .asc.tex file.
-local function convert_schematic(paths, callback)
-    if vim.fn.filereadable(M.config.lt2ti) ~= 1 then
-        notify("lt2ti.py not found: " .. M.config.lt2ti, vim.log.levels.ERROR)
-        return
-    end
-
-    vim.fn.jobstart({M.config.python, M.config.lt2ti, paths.asc}, {
-        cwd = paths.directory,
-
-        stdout_buffered = true,
-        stderr_buffered = true,
-
-        on_exit = function(_, exit_code)
-            vim.schedule(function()
-                if exit_code ~= 0 then
-                    notify("lt2ti.py failed with exit code " .. exit_code, vim.log.levels.ERROR)
-                    return
-                end
-
-                if vim.fn.filereadable(paths.generated) ~= 1 then
-                    notify("lt2ti.py did not create " .. paths.generated, vim.log.levels.ERROR)
-                    return
-                end
-
-                callback()
-            end)
-        end,
-    })
 end
 
 -- Extract the tikzpicture section from the generated .asc.tex file.
@@ -98,76 +65,75 @@ local function extract_tikz(paths)
     return true
 end
 
--- Handle :LTspice open <NAME>
-function M.open(name)
-    if not name_valid(name) then
-        notify("Usage: :LTspice open <NAME>", vim.log.levels.ERROR)
+-- Convert the modified .asc file to a .asc.tex file.
+local function convert_schematic(paths)
+    if vim.fn.filereadable(M.config.lt2ti) ~= 1 then
+        notify("lt2ti.py not found: " .. M.config.lt2ti, vim.log.levels.ERROR)
         return
     end
+
+    vim.fn.jobstart({M.config.python, M.config.lt2ti, paths.asc}, {
+        cwd = paths.directory,
+
+        stdout_buffered = true,
+        stderr_buffered = true,
+
+        on_exit = function(_, exit_code)
+            vim.schedule(function()
+                if exit_code ~= 0 then
+                    notify("lt2ti.py failed with exit code " .. exit_code, vim.log.levels.ERROR)
+                    return
+                end
+
+                if vim.fn.filereadable(paths.generated) ~= 1 then
+                    notify("lt2ti.py did not create " .. paths.generated, vim.log.levels.ERROR)
+                    return
+                end
+
+                extract_tikz(paths)
+            end)
+        end,
+    })
 end
 
 -- Handle :LTspice open <NAME>
 function M.open(name)
-    if not name_valid(name) then
+    local paths = schematic_paths(name)
+    if paths == nil then
         notify("Usage: :LTspice open <name>", vim.log.levels.ERROR)
         return
     end
 
-    local paths = schematic_paths(name)
     if not vim.fn.mkdir(paths.directory, "p") then
         notify("Could not create " .. paths.directory, vim.log.levels.ERROR)
         return
     end
 
-    if vim.uv.fs_stat(paths.asc) then
-        notify(paths.asc .. " already exists", vim.log.levels.ERROR)
-        return
-    end
-
+    local fd = assert(vim.uv.fs_open(paths.asc, "w", 438))
+    vim.uv.fs_close(fd)
     vim.fn.jobstart({M.config.ltspice, paths.asc}, {detach = true})
 end
 
--- Handle :LTspice edit <NAME>
-function M.edit(name)
-    if not name_valid(name) then
-        notify("Usage: :LTspice edit <name>", vim.log.levels.ERROR)
-        return
-    end
-
-    local paths = schematic_paths(name)
-    if not vim.fn.filereadable(paths.asc) then
-        notify(paths.asc .. " does not exist", vim.log.levels.ERROR)
-        return
-    end
-
-    vim.fn.jobstart({M.config.ltspice, paths.asc}, {detach = true})
-end
-
--- Handle :LTspice insert <NAME>
-function M.insert(name)
-    if not name_valid(name) then
-        notify("Usage: :LTspice insert <name>", vim.log.levels.ERROR)
-        return
-    end
-
-    local paths = schematic_paths(name)
-    if not vim.fn.filereadable(paths.asc) then
-        notify(paths.asc .. " does not exist", vim.log.levels.ERROR)
-        return
-    end
-
-    notify("Converting " .. name .. " with lt2circuitikz...")
-    convert_schematic(paths, function()
-        if not extract_tikz(paths) then
+-- Handle :LTspice update
+function M.update(name)
+    if name then
+        local paths = schematic_paths(name)
+        if paths == nil then
+            notify("Usage: :LTspice update <name>", vim.log.levels.ERROR)
             return
         end
+        convert_schematic(paths)
+        return
+    end
 
-        local include = vim.fs.relpath(paths.root, paths.schematic)
-        local lines = {"% @ltspice " .. name, "\\input{" .. include:gsub("\\", "/") .. "}"}
-        local row = vim.api.nvim_win_get_cursor(0)[1] - 1
-        vim.api.nvim_buf_set_lines(0, row, row, false, lines)
-        notify("Inserted LTspice schematic: " .. name)
-    end)
+    local entries = vim.fn.readdir(M.config.directory)
+    for _, name in ipairs(entries) do
+        local stat = vim.uv.fs_stat(vim.fs.joinpath(M.config.directory, name))
+        if not stat or stat.type ~= "directory" then goto continue end
+        local paths = schematic_paths(name)
+        convert_schematic(paths)
+        ::continue::
+    end
 end
 
 -- Handle :LTspice preamble
@@ -193,14 +159,12 @@ function M.setup(opts)
         local args = opts.fargs
         if args[1] == "open" then
             M.open(args[2])
-        elseif args[1] == "edit" then
-            M.edit(args[2])
-        elseif args[1] == "insert" then
-            M.insert(args[2])
+        elseif args[1] == "update" then
+            M.update(args[2])
         elseif args[1] == "preamble" then
             M.preamble()
         else
-            notify("Usage: :LTspice open|edit|insert|preamble <name>", vim.log.levels.ERROR)
+            notify("Usage: :LTspice open|update|preamble <name>", vim.log.levels.ERROR)
         end
     end, {
     nargs = "+",
