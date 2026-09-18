@@ -16,7 +16,10 @@ zstyle ':vcs_info:git:*' formats ' (%b)'
 zstyle ':vcs_info:*' enable git
 setopt PROMPT_SUBST
 zsh_prompt_short_path() { print -P '%~' | sed -E 's|([^/])[^/]*/|\1/|g' }
-PROMPT='%F{green}[%n@%m]%f$(zsh_prompt_short_path)${vcs_info_msg_0_}%# '
+PROMPT='%F{green}[%n@%m]%f$(zsh_prompt_short_path)%F{yellow}${vcs_info_msg_0_}%f%# '
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ] || [ -n "$SSH_CONNECTION" ]; then
+    PROMPT="%F{red}[SSH] $PROMPT"
+fi
 
 # Fish style word skipping
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
