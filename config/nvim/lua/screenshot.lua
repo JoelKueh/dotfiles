@@ -17,7 +17,7 @@ function M.screenshot(name)
     local dir = vim.fn.getcwd() .. "/images"
     vim.fn.mkdir(dir, "p")
     local path = dir .. "/" .. name
-    local cmd = {"sh", "-c", 'geo=$(slurp) && sleep 0.2 && grim -g "$geo" "$1"', "--", path}
+    local cmd = {"sh", "-c", 'sleep 1.0 && geo=$(slurp) && sleep 0.2 && grim -g "$geo" "$1"', "--", path}
 
     -- Run the command.
     vim.system(cmd, {}, function(result)
