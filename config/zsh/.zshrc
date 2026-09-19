@@ -8,6 +8,7 @@ export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+setopt SHARE_HISTORY
 
 # Prompt customization
 autoload -Uz vcs_info
@@ -20,7 +21,6 @@ PROMPT='%F{green}[%n@%m]%f$(zsh_prompt_short_path)%F{yellow}${vcs_info_msg_0_}%f
 if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ] || [ -n "$SSH_CONNECTION" ]; then
     PROMPT="%F{red}[SSH] $PROMPT"
 fi
-
 # Fish style word skipping
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
