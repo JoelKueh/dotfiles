@@ -20,8 +20,8 @@ hl.config({
 hl.device({ name = "wacom-one-by-wacom-s-pen", output = "DP-1" })
 
 -- Configure monitors
-hl.monitor({ output = "DP-1", mode = "highrr", position = "1920x0", scale = 1 })
-hl.monitor({ output = "DP-2", mode = "highrr", position = "0x0", scale = 1 })
+hl.monitor({ output = "DP-1", mode = "highrr", position = "0x0", scale = 1 })
+hl.monitor({ output = "DP-2", mode = "highrr", position = "2560x0", scale = 1 })
 hl.monitor({ output = "eDP-1", mode = "highrr", position = "0x0", scale = 1.5 })
 
 -- Pin workspaces to monitors
