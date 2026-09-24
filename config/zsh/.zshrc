@@ -8,7 +8,16 @@ export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 export ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# History
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=10000
+SAVEHIST=10000
+
+setopt EXTENDED_HISTORY
 setopt SHARE_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_ALL_DUPS
 
 # Prompt customization
 autoload -Uz vcs_info
@@ -43,6 +52,11 @@ if [ -x /usr/bin/dircolors ]; then
     alias fgrep='fgrep --color=auto'
     alias egrep='egrep --color=auto'
 fi
+
+# Keybinds
+autoload -Uz edit-command-line
+zle -N edit-command-line
+bindkey '^X' edit-command-line
 
 # Set default editor
 if command -v nvim >/dev/null 2>&1; then
