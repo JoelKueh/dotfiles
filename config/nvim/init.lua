@@ -1,27 +1,33 @@
 
 -- Plugin Installation
 vim.pack.add({
-  'https://github.com/rebelot/kanagawa.nvim',           -- Cool colorscheme
-  'https://github.com/rose-pine/neovim',                -- Other cool color scheme
-  'https://github.com/folke/flash.nvim',                -- Helix-style word jump motions
-  'https://github.com/folke/which-key.nvim',            -- Key mapping reference tool
-  'https://github.com/nvim-telescope/telescope.nvim',   -- File picker (maybe try folke/snacks)
-  'https://github.com/lewis6991/gitsigns.nvim',         -- Nice git utilities
-  'https://github.com/rhysd/git-messenger.vim',         -- More git utilities
-  'https://github.com/nvim-lua/plenary.nvim',           -- Rendering utilities used by telescope
-  'https://github.com/neovim/nvim-lspconfig',           -- Auto configuration for common lsps
-  'https://github.com/dgagn/diagflow.nvim',             -- Helix-style diagnostics
-  'https://github.com/sindrets/diffview.nvim',          -- Tabbed diff view
-  'https://github.com/chomosuke/typst-preview.nvim',    -- Typst preview
+    'https://github.com/rebelot/kanagawa.nvim',           -- Cool colorscheme
+    'https://github.com/rose-pine/neovim',                -- Other cool color scheme
+    'https://github.com/folke/flash.nvim',                -- Helix-style word jump motions
+    'https://github.com/folke/which-key.nvim',            -- Key mapping reference tool
+    'https://github.com/folke/snacks.nvim',               -- A bunch of utilities
+    'https://github.com/dgagn/diagflow.nvim',             -- Helix-style diagnostics
+    'https://github.com/sindrets/diffview.nvim',          -- Tabbed diff view
+    'https://github.com/nvim-treesitter/nvim-treesitter', -- Treesitter
+    'https://github.com/neovim/nvim-lspconfig',           -- Sane LSP defaults
+    'https://github.com/mason-org/mason.nvim.git',        -- LSP installation utility
 })
 
-local utils = require("utils")
-local lsp = require("lsp")
-require("ltspice").setup({})
-require("screenshot").setup({})
+local _ = require("utils")
+local _ = require("lsp")
 
--- Generic Configuration
--- vim.cmd[[colorscheme kanagawa]]
+local flash = require("flash")
+local diagflow = require("diagflow")
+local diffview = require("diffview")
+local treesitter = require("nvim-treesitter")
+local mason = require("mason")
+local snacks = require("snacks")
+local whichkey = require("which-key")
+
+----------------------------------------------------------------------
+-- Generic
+----------------------------------------------------------------------
+
 vim.cmd[[colorscheme rose-pine]]
 vim.g.mapleader = " "
 vim.opt.number = true
@@ -33,77 +39,37 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = false
 
--- Vim Keybind Configuration
---- Keybinds for jumping around places
-vim.keymap.set({'n', 'v'}, 'ge', 'G')
-vim.keymap.set({'n', 'v'}, 'gl', '$')
-vim.keymap.set({'n', 'v'}, 'gh', '0')
-vim.keymap.set({'n', 'v'}, 'gs', '^')
---- Comment Keybinds
-vim.keymap.set('n', '<leader>c', 'gcc', { remap = true, desc = 'Toggle comment' })
-vim.keymap.set('v', '<leader>c', 'gc', { remap = true, desc = 'Toggle comment selection' })
---- Clipboard Keybinds
-vim.keymap.set('v', '<leader>y', '"+y', { remap = true, desc = 'Yank selection to clipboard' })
-vim.keymap.set({'n', 'v'}, '<leader>p', '"+y', { remap = true, desc = 'Paste clipboard after selection' })
-vim.keymap.set({'n', 'v'}, '<leader>P', '"+y', { remap = true, desc = 'Paste clipboard before selection' })
+----------------------------------------------------------------------
+-- Plugins
+----------------------------------------------------------------------
 
--- These keybinds are nasty
-vim.keymap.del('n', 'gO')
-vim.keymap.del('n', 'gx')
-vim.keymap.set('n', 'g%', '<Nop>')
-vim.keymap.set('n', 'g;', '<Nop>')
-vim.keymap.set('n', 'g,', '<Nop>')
+flash.setup({})
+diffview.setup({})
+diagflow.setup({})
+treesitter.setup({})
+mason.setup({})
 
--- Which Key Configuration
-local whichkey = require("which-key")
-local tsbuiltin = require("telescope.builtin")
+snacks.setup({
+    bigfile = { enabled = true },
+    git = { enabled = true },
+    indent = { enabled = true, scope = { enabled = false } },
+    picker = { enabled = true, win = { input = { keys = { ["<Esc>"] = { "close", mode = "i" } }}}},
+    scope = { enabled = true },
+    statuscolumn = { enabled = true },
+    rename = { enabled = true },
+    words = { enabled = true },
+})
+
+----------------------------------------------------------------------
+-- Keybinds
+----------------------------------------------------------------------
+
+local _ = require("keymap")
 whichkey.setup({preset="helix", icons={mappings=false}})
 whichkey.add({
     {'<leader>', name = 'Space', group = 'Space'},
-    {'<leader>f', tsbuiltin.find_files, desc = 'Open file picker at current working directory'},
-    {'<leader>F', find_files_relative, desc = 'Open file picker at current buffer\'s directory'},
-    {'<leader>e', '<CMD>Explore<CR>', desc = 'Explore'},
-    {'<leader>b', tsbuiltin.buffers, desc = 'Open buffer picker'},
-    {'<leader>g', tsbuiltin.git_file, desc = 'Pick git file'},
-    {'<leader>j', tsbuiltin.jumplist, desc = 'Open jumplist picker'},
-    {'<leader>s', tsbuiltin.lsp_document_symbols, desc = 'Open symbol picker'},
-    {'<leader>S', tsbuiltin.lsp_workspace_symbols, desc = 'Open workspace symbol picker'},
-    {'<leader>d', tsbuiltin.diagnostics, desc = 'Open diagnostic picker'},
-    {'<leader>D', tsbuiltin.lsp_workspace_diagnostics, desc = 'Open workspace diagnostic picker'},
-    {'<leader>m', tsbuiltin.colorscheme, desc = 'Open colorscheme picker'},
-    {'<leader>/', tsbuiltin.live_grep, desc = 'Global search in workspace folder'},
-
-    {'<leader>w', proxy = '<c-w>', group = "Window"},
-    {'<leader>k', vim.lsp.buf.hover, desc = 'Show docs for item under cursor'},
-    {'<leader>r', vim.lsp.buf.rename, desc = 'Rename symbol'},
-    {'<leader>?', whichkey.show, desc = 'Show keybinds'},
-
+    {'<leader>w', proxy = '<c-w>', group = 'Window'},
     {'g', name = 'Goto', group = 'Goto'},
-    {'gg', desc = 'Goto line number <n> else file start'},
-    {'gf', desc = 'Goto file in selection'},
-    {'gh', desc = 'Goto line start'},
-    {'gl', desc = 'Goto line end'},
-    {'gs', desc = 'Goto first non-blank in line'},
-    {'gd', tsbuiltin.lsp_definitions, desc = 'Goto definition'},
-    {'gr', tsbuiltin.lsp_references, desc = 'Goto references', nowait = true},
-    {'gi', tsbuiltin.lsp_implementations, desc = 'Goto implementation'},
-    {'gv', desc = 'Goto last visual selection'},
-    {'gw', helix_flash_jump, desc = 'Jump to a two-character label'},
-    {'gu', desc = 'Make lowercase in motion'},
-    {'gU', desc = 'Make uppercase in motion'},
-    {'g~', desc = 'Toggle case in motion'},
-    {'g%', hidden = true},
-    {'g;', hidden = true},
-    {'g,', hidden = true},
-
     {'z<CR>', hidden = true},
 })
 
--- Other Plugin Configuration
-require("diffview").setup({
-  use_icons = false, -- Disables special character icons
-  signs = {
-    fold_closed = "+", -- Standard ASCII replacement for closed folds
-    fold_open = "-",   -- Standard ASCII replacement for open folds
-  }
-})
