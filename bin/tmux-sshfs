@@ -21,20 +21,6 @@ require_command() {
     command -v "$1" >/dev/null 2>&1 || die "required command not found: $1"
 }
 
-pick_host() {
-	awk '
-	    $1 == "Host" {
-	        for (i = 2; i <= NF; i++)
-	            if ($i !~ /[*?!]/)
-	                print $i
-	    }
-	' ~/.ssh/config | fzf
-}
-
-pick_wd() {
-	ssh "$host" 'find "$HOME" -type d -maxdepth 3 2>/dev/null'
-}
-
 # ---------------------------------------------------------------------------
 # SSH Host / Working Directory Selection
 # ---------------------------------------------------------------------------
@@ -56,7 +42,7 @@ select_host() {
 
 select_wd() {
     local host="$1"
-	wd=$(ssh $SSH_FLAGS "$1" 'find "$HOME" -maxdepth 3 -type d 2>/dev/null' |
+	wd=$(ssh $SSH_FLAGS "$1" 'find "." -maxdepth 3 -type d 2>/dev/null -printf "%P\n"' |
 		fzf --height=40% --reverse)
 	printf "$wd\n"
 }
@@ -67,7 +53,6 @@ select_wd() {
 
 mount_sshfs() {
     local host="$1"
-	local remote_path="$2"
 	local mount="$3"
 
     mkdir -p "$mount"
@@ -77,8 +62,8 @@ mount_sshfs() {
 	    die "mountpoint already in use: $mount"
 	fi
 
-	printf 'Mounting %s:%s at %s\n' "$host" "$remote_path" "$mount"
-    sshfs "$host:$remote_path" "$mount" \
+	printf 'Mounting %s: at %s\n' "$host" "$mount"
+    sshfs "$host:" "$mount" \
 		-o ssh_command='ssh -o RequestTTY=no -o RemoteCommand=none' \
         -o cache=yes \
 		-o auto_cache \
@@ -94,12 +79,6 @@ mount_sshfs() {
 # Mount
 # ---------------------------------------------------------------------------
 
-session_name() {
-	local host="$1"
-	local path="$2"
-	printf "$host-${path//\//-}"
-}
-
 create_session() {
     local session="$1"
     local mount="$2"
@@ -108,11 +87,7 @@ create_session() {
 
 	local nvim_cmd
 	read -r -d '' nvim_cmd <<EOF
-while :; do
-    nvim .
-    read -r -p 'Press q to quit, or Enter to reopen: ' answer
-    [[ "\$answer" == q ]] && break
-done
+cd '$remote_path' && zsh
 fusermount3 -uz -- '$mount'
 EOF
 
@@ -133,6 +108,9 @@ EOF
 	tmux set-option -t "$session" default-command \
     	"ssh $SSH_FLAGS -t $host 'cd $remote_path && exec zsh -l'"
 
+	# Ctrl-A: create a local zsh window instead of an SSH window.
+	tmux bind-key -t "$session" -n C-a new-window -c "#{pane_current_path}" "exec zsh -l"
+
     printf '%s\n' "$edit_pane"
 }
 
@@ -149,16 +127,13 @@ require_command sync
 # Select host and working directory.
 host="$(select_host)"
 [[ "$host" ]] || die "no host selected"
-
 remote_path="$(select_wd "$host")"
 [[ "$remote_path" ]] || die "no working directory selected"
-
-session="$(session_name "$host" "$remote_path")"
-mount="$HOME/.sshfs/$session"
+mount="$HOME/.sshfs/$host"
 
 # Connect to the session if it already exists.
-if tmux has-session -t "$session" 2>/dev/null; then
-	tmux attach-session -t "$session"
+if tmux has-session -t "$host" 2>/dev/null; then
+	tmux attach-session -t "$host"
 	exit 0
 fi
 
@@ -166,6 +141,7 @@ fi
 mount_sshfs "$host" "$remote_path" "$mount"
 
 # Spawn the tmux session.
+session="sshfs-$host"
 edit_pane="$(create_session "$session" "$mount" "$remote_path")"
 tmux select-pane -t "$edit_pane"
 tmux attach-session -t "$session"

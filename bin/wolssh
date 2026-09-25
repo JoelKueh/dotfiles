@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Check if fewer than 1 argument was passed
+if [ -z "$1" ]; then
+    echo "Usage: $0 <HOST>."
+    exit 1
+fi
+
+case $1 in
+	jdsk)
+
+		;;
+	*)
+		echo "Error: Invalid wolssh target";
+		exit 1
+		;;
+esac
