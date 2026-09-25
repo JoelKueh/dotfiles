@@ -58,7 +58,9 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey '^X' edit-command-line
 
-# Set default editor
+# Set Defaults
+export MANPAGER="less -R --use-color -Dd+r -Du+b"
+export MANROFFOPT="-c"
 if command -v nvim >/dev/null 2>&1; then
     export EDITOR='nvim'
 else
@@ -79,7 +81,7 @@ alias gp="git push"
 alias gl="git log --oneline --graph --decorate"
 
 alias ll="ls -l"
-alias la="ls -la"
+alias la="ls -lA"
 alias h="history | grep"
 
 # opencode
