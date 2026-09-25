@@ -5,6 +5,7 @@ local vars = require("variables")
 -- =============================================================================
 
 -- Focus
+hl.unbind(vars.mainMod .. " + J")
 hl.bind(vars.mainMod .. " + H",  hl.dsp.focus({ direction = "l" }))
 hl.bind(vars.mainMod .. " + J",  hl.dsp.focus({ direction = "d" }))
 hl.bind(vars.mainMod .. " + K",    hl.dsp.focus({ direction = "u" }))
