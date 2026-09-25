@@ -1,7 +1,22 @@
 
-# Autocompletion and autosuggestions
+# Colors
 autoload -U colors && colors
-autoload -Uz compinit && compinit
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias vdir='vdir --color=auto'
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+fi
+
+# Autocompletion
+autoload -Uz compinit
+if [ "$(find $ZDOTDIR/.zcompdump -mtime +1 2>/dev/null)" ]; then compinint; fi
+compinit -C
+
+# Autosuggestions
 export ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 export ZSH_AUTOSUGGEST_USE_ASYNC=1
 export ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
@@ -42,17 +57,6 @@ bindkey '^H'      backward-kill-word # ctrl + h: delete previous word
 bindkey '^[^?'    backward-kill-word # ctrl + backsapce: delete previous word
 bindkey '^[[3;5~' kill-word          # ctrl + delete: delete subsequent word
 
-# Colors
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    alias ls='ls --color=auto'
-    alias dir='dir --color=auto'
-    alias vdir='vdir --color=auto'
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-fi
-
 # Keybinds
 autoload -Uz edit-command-line
 zle -N edit-command-line
@@ -90,3 +94,4 @@ export PATH=/home/joel/.opencode/bin:$PATH
 # Qwen Code PATH block begin
 export PATH='/home/joel/.local/bin':$PATH
 # Qwen Code PATH block end
+
