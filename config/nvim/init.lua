@@ -51,6 +51,7 @@ mason.setup({})
 
 snacks.setup({
     bigfile = { enabled = true },
+    gh = { enabled = true },
     git = { enabled = true },
     indent = { enabled = true, scope = { enabled = false } },
     picker = { enabled = true, win = { input = { keys = { ["<Esc>"] = { "close", mode = "i" } }}}},
@@ -69,6 +70,8 @@ whichkey.setup({preset="helix", icons={mappings=false}})
 whichkey.add({
     {'<leader>', name = 'Space', group = 'Space'},
     {'<leader>w', proxy = '<c-w>', group = 'Window'},
+    {'<leader>g', name = 'Git', group = 'Git'},
+    {'<leader>s', name = 'Search', group = 'Search'},
     {'g', name = 'Goto', group = 'Goto'},
     {'z<CR>', hidden = true},
 })

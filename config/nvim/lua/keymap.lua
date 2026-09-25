@@ -1,4 +1,10 @@
 
+----------------------------------------------------------------------
+-- Utilities / Definitions
+----------------------------------------------------------------------
+
+local Snacks;
+
 local function s(mode, motion, action, desc, dict)
     dict = dict or {}
     dict["desc"] = desc
@@ -79,7 +85,7 @@ sn("<leader>gI", function() Snacks.picker.gh_issue({ state = "all" }) end, "GitH
 sn("<leader>gp", function() Snacks.picker.gh_pr() end, "GitHub Pull Requests (open)")
 sn("<leader>gP", function() Snacks.picker.gh_pr({ state = "all" }) end, "GitHub Pull Requests (all)")
 
--- Grep
+-- grep
 sn("<leader>sb", function() Snacks.picker.lines() end, "Buffer Lines")
 sn("<leader>sB", function() Snacks.picker.grep_buffers() end, "Grep Open Buffers")
 sn("<leader>sg", function() Snacks.picker.grep() end, "Grep")
