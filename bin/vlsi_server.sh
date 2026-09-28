@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HOST_NUMBER="${1:-18}"
+HOST_NUMBER="${1:-32}"
 PORT=$(printf "330%02d" "$HOST_NUMBER")
 HOST=$(printf "ece-kh2120-%02d.ece.umn.edu:22" "$HOST_NUMBER")
 
