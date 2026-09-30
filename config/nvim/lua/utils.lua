@@ -1,20 +1,5 @@
 local flash = require("flash")
 
--- Mimic the helix current file file picker
-function find_files_relative()
-  local current_file = vim.api.nvim_buf_get_name(0)
-  if current_file == "" then
-    tsbuiltin.find_files()
-    return
-  end
-
-  local current_dir = vim.fs.dirname(current_file)
-  require("telescope.builtin").find_files({
-    cwd = current_dir,
-    prompt_title = "Find Files (Relative: " .. vim.fs.basename(current_dir) .. ")",
-  })
-end
-
 -- Mimic the helix goto word motion
 function helix_flash_jump()
     vim.api.nvim_set_hl(0, "FlashMatch", { fg = "#ff9e64", bold = true, bg = "NONE" })
@@ -26,7 +11,7 @@ function helix_flash_jump()
             { opts.match.label2, "FlashLabel" },
         }
     end
-    
+
     flash.jump({
         search = { mode = "search" },
         label = { after = false, before = { 0, 0 }, uppercase = false, format = format },
@@ -60,3 +45,35 @@ function helix_flash_jump()
         end,
     })
 end
+
+-- Take a screenshot.
+function screenshot(name)
+    if not name:match("%.png$") then
+        name = name .. ".png"
+    end
+
+    -- Prepare the path.
+    local dir = vim.fn.getcwd() .. "/images"
+    vim.fn.mkdir(dir, "p")
+    local path = dir .. "/" .. name
+    local cmd = {"sh", "-c", 'sleep 1.0 && geo=$(slurp) && sleep 0.2 && grim -g "$geo" "$1"', "--", path}
+
+    -- Run the command.
+    vim.system(cmd, {}, function(result)
+        vim.schedule(function()
+            if result.code == 0 then
+                vim.notify("Screenshot saved: " .. path, vim.log.levels.INFO)
+            elseif result.code == 1 then
+                vim.notify("Screenshot cancelled", vim.log.levels.INFO)
+            else
+                vim.notify("grim failed: " .. (result.stderr or ""), vim.log.levels.ERROR)
+            end
+        end)
+    end)
+end
+
+-- Register Commands
+vim.api.nvim_create_user_command("SS", function(opts)
+    local args = opts.fargs
+    screenshot(args[1])
+end, {nargs = 1, desc = "Takes a screenshot and saves it to <PWD>/images/NAME.png"})
