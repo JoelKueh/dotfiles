@@ -11,6 +11,7 @@ vim.pack.add({
     'https://github.com/nvim-treesitter/nvim-treesitter', -- Treesitter
     'https://github.com/neovim/nvim-lspconfig',           -- Sane LSP defaults
     'https://github.com/mason-org/mason.nvim.git',        -- LSP installation utility
+    'https://github.com/chomosuke/typst-preview.nvim.git',-- LSP installation utility
 })
 
 local _ = require("utils")

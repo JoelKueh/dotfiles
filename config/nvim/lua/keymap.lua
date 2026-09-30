@@ -3,8 +3,6 @@
 -- Utilities / Definitions
 ----------------------------------------------------------------------
 
-local Snacks;
-
 local function s(mode, motion, action, desc, dict)
     dict = dict or {}
     dict["desc"] = desc
@@ -34,6 +32,7 @@ end
 snv('ge', 'G', 'Goto end of file')
 snv('gl', '$', 'Goto end of line')
 snv('gh', '0', 'Goto beginning of line')
+snv('gw', function() helix_flash_jump() end, 'Goto word')
 
 -- Comments
 sn('<leader>c', 'gcc', 'Toggle comment', { remap = true })
