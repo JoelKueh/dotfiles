@@ -40,8 +40,6 @@ sv('<leader>c', 'gc', 'Toggle comment selection', { remap = true })
 
 -- Clipboard
 sv('<leader>y', '"+y', 'Yank selection to clipboard', { remap = true })
-snv('<leader>p', '"+p', 'Paste clipboard after selection', { remap = true })
-snv('<leader>P', '"+P', 'Paste clipboard before selection', { remap = true })
 
 -- These keybinds are nasty
 vim.keymap.del('n', 'gO')
@@ -55,19 +53,20 @@ vim.keymap.set('n', 'g,', '<Nop>')
 ----------------------------------------------------------------------
 
 -- Top Pickers & Explorer
-sn("<leader><space>", function() Snacks.picker.smart() end, "Smart Find Files")
+sn("<leader><leader>", function() Snacks.picker.smart() end, "Smart Find Files")
+sn("<leader>f", function() Snacks.picker.files() end, "Find Files")
 sn("<leader>,", function() Snacks.picker.buffers() end, "Buffers")
 sn("<leader>/", function() Snacks.picker.grep() end, "Grep")
 sn("<leader>:", function() Snacks.picker.command_history() end, "Command History")
 sn("<leader>n", function() Snacks.picker.notifications() end, "Notification History")
 sn("<leader>e", ":Explore<CR>", "File Explorer")
 
--- find
-sn("<leader>fb", function() Snacks.picker.buffers() end, "Buffers")
-sn("<leader>ff", function() Snacks.picker.files() end, "Find Files")
-sn("<leader>fg", function() Snacks.picker.git_files() end, "Find Git Files")
-sn("<leader>fp", function() Snacks.picker.projects() end, "Projects")
-sn("<leader>fr", function() Snacks.picker.recent() end, "Recent")
+-- pick
+sn("<leader>pb", function() Snacks.picker.buffers() end, "Buffers")
+sn("<leader>pf", function() Snacks.picker.files() end, "Find Files")
+sn("<leader>pg", function() Snacks.picker.git_files() end, "Find Git Files")
+sn("<leader>pp", function() Snacks.picker.projects() end, "Projects")
+sn("<leader>pr", function() Snacks.picker.recent() end, "Recent")
 
 -- git
 sn("<leader>gb", function() Snacks.picker.git_branches() end, "Git Branches")
@@ -125,7 +124,7 @@ sn("<leader>ss", function() Snacks.picker.lsp_symbols() end, "LSP Symbols")
 sn("<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, "LSP Workspace Symbols")
 
 -- Other
-sn("<leader>z",     function() Snacks.zen() end, "Toggle Zen Mode")
+sn("<leader>z",     function() Snacks.zen.zoom() end, "Toggle Zen Mode")
 sn("<leader>Z",     function() Snacks.zen.zoom() end, "Toggle Zoom")
 sn("<leader>.",     function() Snacks.scratch() end, "Toggle Scratch Buffer")
 sn("<leader>S",     function() Snacks.scratch.select() end, "Select Scratch Buffer")

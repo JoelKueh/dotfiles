@@ -1,9 +1,12 @@
 #!/bin/bash
 
-HOST_NUMBER="${1:-32}"
-PORT=$(printf "330%02d" "$HOST_NUMBER")
-HOST=$(printf "ece-kh2120-%02d.ece.umn.edu:22" "$HOST_NUMBER")
+for host_number in {1..32}; do
+	port=$(printf "330%02d" "$host_number")
+	host=$(printf "ece-kh2120-%02d.ece.umn.edu:22" "$host_number")
 
-fuser -k $PORT/tcp 2>/dev/null
-nohup socat "TCP-LISTEN:$PORT",bind=127.0.0.1,reuseaddr,fork \
-	"SYSTEM:'ssh -W $HOST vlsi-jump'" &>/dev/null &
+	fuser -k $port/tcp 2>/dev/null
+	socat "TCP-LISTEN:$port",bind=127.0.0.1,reuseaddr,fork \
+		"SYSTEM:'ssh -W $host vlsi-jump'" &>/dev/null &
+done
+
+sleep infinity
