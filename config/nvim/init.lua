@@ -73,6 +73,9 @@ whichkey.add({
     {'<leader>w', proxy = '<c-w>', group = 'Window'},
     {'<leader>g', name = 'Git', group = 'Git'},
     {'<leader>s', name = 'Search', group = 'Search'},
+    {'<leader>p', name = 'Search', group = 'Search'},
+    {'<leader>b', name = 'Buffers', group = 'Buffers'},
+    {'<leader>u', name = 'Etc', group = 'Etc'},
     {'g', name = 'Goto', group = 'Goto'},
     {'z<CR>', hidden = true},
 })

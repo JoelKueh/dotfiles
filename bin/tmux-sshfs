@@ -106,7 +106,7 @@ EOF
 
 	# Run ssh in new all new windows.
 	tmux set-option -t "$session" default-command \
-    	"ssh $SSH_FLAGS -t $host 'cd $remote_path && exec zsh -l'"
+    	"autossh -M 0 $SSH_FLAGS -t $host 'cd $remote_path && exec zsh -l'"
 
 	# Ctrl-A: create a local zsh window instead of an SSH window.
 	tmux bind-key -t "$session" -n C-a new-window -c "#{pane_current_path}" "exec zsh -l"
