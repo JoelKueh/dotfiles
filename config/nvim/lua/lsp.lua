@@ -14,7 +14,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
         -- Enable autocompletion
         if client:supports_method('textDocument/completion') then
-            vim.lsp.completion.enable(true, client.id, args.buf, { autotrigger = true })
+            vim.lsp.completion.enable(true, client.id, args.buf)
         end
     end
 })
@@ -22,13 +22,22 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 -- Custom Lsp Configuration
 vim.lsp.config('lua_ls', {settings = { Lua = { diagnostics = { globals = { 'vim' }}}}})
+
+vim.lsp.config('svlangserver' ,{
+    settings = {
+        systemverilog = {
+            includeIndexing = { "src/**/*.{sv,svh,v,vh}", "inputs/**/*.{sv,svh,v,vh}" },
+        },
+    },
+})
+
 vim.lsp.enable({
     'clangd',
     'lua_ls',
     'bashls',
     'zls',
-    'svlangserver',
     'rust_analyzer',
     'pyright',
-    'tinymist'
+    'tinymist',
+    'mpls',
 })
