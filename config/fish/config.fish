@@ -6,9 +6,6 @@ end
 set -gx ZVM_INSTALL "$HOME/.zvm/self"
 set -gx PATH $PATH "$HOME/.zvm/bin"
 set -gx PATH $PATH "$ZVM_INSTALL/"
-<<<<<<< Updated upstream
-=======
-export _JAVA_AWT_WM_NONREPARENTING=1
 
 # Colors
 if test -x /usr/bin/dircolors
@@ -32,26 +29,22 @@ set -g fish_history_max 10000
 
 # Prompt customization
 function fish_prompt
-    set -l user_host (set_color green)'['(whoami)'@'(prompt_hostname)']'(set_color normal)
-
-    # Shorten directory components, retaining the final component.
-    set -l cwd (prompt_pwd)
-
-    # Git branch, if inside a Git repository.
-    set -l git_info
-    if command -q git
-        set -l branch (command git branch --show-current 2>/dev/null)
-        if test -n "$branch"
-            set git_info (set_color yellow)" ($branch)"(set_color normal)
-        end
-    end
-
-    # SSH indicator
     if set -q SSH_CLIENT; or set -q SSH_TTY; or set -q SSH_CONNECTION
-        set user_host (set_color red)'[SSH] '(set_color normal)$user_host
+        set_color red
+        printf '[SSH] '
     end
 
-    echo -n $user_host$cwd$git_info' '
+    set_color green
+    printf '[%s@%s]' (whoami) (prompt_hostname)
+
+    set_color normal
+    printf '%s' (prompt_pwd)
+
+    set_color yellow
+    fish_vcs_prompt
+
+    set_color normal
+    printf '%% '
 end
 
 # Key bindings
@@ -61,17 +54,10 @@ bind \eOD backward-word
 bind \e\[1\;5C forward-word
 bind \eOC forward-word
 
-# Ctrl + H: delete previous word
-bind \cH backward-kill-word
-
-# Ctrl + Backspace: delete previous word
-bind \e\x7f backward-kill-word
-
-# Ctrl + Delete: delete next word
-bind \e\[3\;5~ kill-word
-
-# Ctrl + X: edit command line in external editor
-bind \cx edit_command_buffer
+bind \cH backward-kill-word    # Ctrl + H: delete previous word
+bind \e\x7f backward-kill-word # Ctrl + Backspace: delete previous word
+bind \e\[3\;5~ kill-word       # Ctrl + Delete: delete next word
+bind \cx edit_command_buffer   # Ctrl + X: edit command line in external editor
 
 # Set defaults
 set -gx MANPAGER 'less -R --use-color -Dd+r -Du+b'
@@ -82,6 +68,11 @@ if command -q nvim
 else
     set -gx EDITOR vim
 end
+
+# SVUnit and UVM
+set -gx SVUNIT_INSTALL "$HOME/opt/svunit-master"
+fish_add_path --path "$SVUNIT_INSTALL/bin"
+set -gx UVM_HOME "$HOME/opt/uvm-verilator"
 
 alias vim='$EDITOR'
 alias vi='$EDITOR'
@@ -98,4 +89,5 @@ alias gp='git push'
 alias gl='git log --oneline --graph --decorate'
 
 alias h='history | grep'
->>>>>>> Stashed changes
+
+set -g fish_greeting
