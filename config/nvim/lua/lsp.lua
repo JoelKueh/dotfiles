@@ -34,6 +34,7 @@ vim.lsp.config('svlangserver' ,{
 vim.lsp.enable({
     'clangd',
     'lua_ls',
+    'svlangserver',
     'bashls',
     'zls',
     'rust_analyzer',
