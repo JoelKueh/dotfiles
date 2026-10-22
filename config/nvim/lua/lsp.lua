@@ -26,7 +26,20 @@ vim.lsp.config('lua_ls', {settings = { Lua = { diagnostics = { globals = { 'vim'
 vim.lsp.config('svlangserver' ,{
     settings = {
         systemverilog = {
-            includeIndexing = { "src/**/*.{sv,svh,v,vh}", "inputs/**/*.{sv,svh,v,vh}" },
+            includeIndexing = { "**/*.{sv,svh}" },
+            excludeIndexing = { "test/**/*.sv*" },
+
+            includePaths = {
+              os.getenv("UVM_HOME") and (os.getenv("UVM_HOME") .. "/src"),
+              os.getenv("SVUNIT_INSTALL") and (os.getenv("SVUNIT_INSTALL") .. "/src"),
+              "./include"
+            },
+
+            defines = {
+              "UVM_NO_DEPRECATED"
+            },
+
+            launchConfiguration = "verilator -sv --lint-only -Wall"
         },
     },
 })
