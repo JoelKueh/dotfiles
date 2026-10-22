@@ -41,6 +41,33 @@ sv('<leader>c', 'gc', 'Toggle comment selection', { remap = true })
 -- Clipboard
 sv('<leader>y', '"+y', 'Yank selection to clipboard', { remap = true })
 
+-- Quickfix
+-- Quickfix navigation
+vim.keymap.set("n", "<leader>q", function()
+  for _, win in ipairs(vim.fn.getwininfo()) do
+    if win.quickfix == 1 then
+      vim.cmd("cclose")
+      return
+    end
+  end
+  vim.cmd("copen 20")
+end, { desc = "Toggle quickfix list" })
+sn("]q", "<cmd>cnext<CR>", "Next quickfix item")
+sn("[q", "<cmd>cprevious<CR>", "Previous quickfix item")
+
+-- Quickfix window keybinds
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "qf",
+  callback = function(event)
+    local opts = { buffer = event.buf, silent = true }
+    vim.keymap.set("n", "q", "<cmd>cclose<CR>", opts)
+    vim.keymap.set("n", "t", "<C-w><CR><C-w>T", opts)
+    vim.keymap.set("n", "v", "<C-w><CR><C-w>L", opts)
+    vim.keymap.set("n", "s", "<C-w><CR><C-w>K", opts)
+  end,
+})
+
+
 -- These keybinds are nasty
 vim.keymap.del('n', 'gO')
 vim.keymap.del('n', 'gx')

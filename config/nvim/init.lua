@@ -43,6 +43,16 @@ vim.opt.shiftwidth = 4
 vim.opt.expandtab = false
 
 ----------------------------------------------------------------------
+-- Generic
+----------------------------------------------------------------------
+
+vim.bo.errorformat = table.concat({
+  "%E%*[^:]: %f|%l col %c| %m", -- Verilator errors
+  "%W%*[^:]: %f|%l col %c| %m", -- Verilator warnings
+  "%-G%.%#",                    -- ignore other output, such as continuation/note lines
+}, ",")
+
+----------------------------------------------------------------------
 -- Plugins
 ----------------------------------------------------------------------
 
