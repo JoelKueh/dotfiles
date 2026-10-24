@@ -26,14 +26,13 @@ vim.lsp.config('lua_ls', {settings = { Lua = { diagnostics = { globals = { 'vim'
 vim.lsp.config('svlangserver' ,{
     settings = {
         systemverilog = {
-            includeIndexing = { "**/*.{sv,svh}" },
-            excludeIndexing = { "test/**/*.sv*" },
-
-            includePaths = {
-              os.getenv("UVM_HOME") and (os.getenv("UVM_HOME") .. "/src"),
-              os.getenv("SVUNIT_INSTALL") and (os.getenv("SVUNIT_INSTALL") .. "/src"),
-              "./include"
+            includeIndexing = {
+                "src/**/*.{sv,svh,v,vh}",
+                "lib/**/*.{sv,svh,v,vh}",
+                "inputs/**/*.{sv,svh,v,vh}",
+                "*.{sv,svh,v,vh}",
             },
+            formatCommand = "verible-verilog-format --indentation_spaces=4",
 
             defines = {
               "UVM_NO_DEPRECATED"
