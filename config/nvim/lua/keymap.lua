@@ -67,6 +67,7 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+sn("<leader>=", function() vim.lsp.buf.format() end, "Format buffer")
 
 -- These keybinds are nasty
 vim.keymap.del('n', 'gO')

@@ -42,6 +42,9 @@ vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = false
 
+-- DANGER: Run .nvim.lua at the base of every repo
+vim.o.exrc = true
+
 ----------------------------------------------------------------------
 -- Generic
 ----------------------------------------------------------------------
@@ -67,7 +70,14 @@ snacks.setup({
     gh = { enabled = true },
     git = { enabled = true },
     indent = { enabled = true, scope = { enabled = false } },
-    picker = { enabled = true, win = { input = { keys = { ["<Esc>"] = { "close", mode = "i" } }}}},
+    picker = {
+        enabled = true,
+        win = { input = { keys = { ["<Esc>"] = { "close", mode = "i" } }}},
+        sources = {
+            files = { exclude = { "build", "lib" } },
+            grep = { args = {"--glob", "!build/**", "--glob", "!lib/**", } },
+        },
+    },
     scope = { enabled = true },
     statuscolumn = { enabled = true },
     rename = { enabled = true },
