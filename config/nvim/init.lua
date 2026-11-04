@@ -41,8 +41,7 @@ vim.opt.guicursor = "a:block"
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = false
-
--- DANGER: Run .nvim.lua at the base of every repo
+vim.opt.runtimepath:prepend("/home/kuehn348/opt/share/nvim/runtime")
 vim.o.exrc = true
 
 ----------------------------------------------------------------------
