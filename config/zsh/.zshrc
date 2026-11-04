@@ -66,7 +66,7 @@ bindkey '^X' edit-command-line
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 export MANROFFOPT="-c"
 # Set default editor
-export EDITOR='nvim'
+export EDITOR='gvim -v'
 alias vim="$EDITOR"
 alias vi="$EDITOR"
 alias v="$EDITOR"
