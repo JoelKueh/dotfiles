@@ -65,11 +65,8 @@ bindkey '^X' edit-command-line
 # Set Defaults
 export MANPAGER="less -R --use-color -Dd+r -Du+b"
 export MANROFFOPT="-c"
-if command -v nvim >/dev/null 2>&1; then
-    export EDITOR='nvim'
-else
-    export EDITOR='vim'
-fi
+# Set default editor
+export EDITOR='nvim'
 alias vim="$EDITOR"
 alias vi="$EDITOR"
 alias v="$EDITOR"
@@ -77,6 +74,12 @@ alias v="$EDITOR"
 # More Aliases
 alias ll="ls -l"
 alias la="ls -la"
+
+# Source environment for VLSI Design
+ss() {
+    export OA_UNSUPPORTED_PLAT=linux_rhel70_gcc93x
+    source /project/F26-EE5323/Setup/env.sh
+}
 
 alias gs="git status"
 alias ga="git add"
@@ -87,6 +90,8 @@ alias gl="git log --oneline --graph --decorate"
 alias ll="ls -l"
 alias la="ls -lA"
 alias h="history | grep"
+
+source ~/EE5327.zshrc
 
 # opencode
 export PATH=/home/joel/.opencode/bin:$PATH
