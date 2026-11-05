@@ -1,0 +1,152 @@
+#!/usr/bin/bash
+set -o pipefail
+
+SSH_FLAGS="-o RequestTTY=no -o RemoteCommand=none -o StrictHostKeyChecking=accept-new"
+
+# ---------------------------------------------------------------------------
+# Utility
+# ---------------------------------------------------------------------------
+
+die() {
+    printf 'tmux-rclone: %s\n' "$*" >&2
+    exit 1
+}
+
+usage() {
+    echo "usage: $(basename "$0") <host>[:remote/path] [remote/path]" >&2
+    exit 1
+}
+
+require_command() {
+    command -v "$1" >/dev/null 2>&1 || die "required command not found: $1"
+}
+
+attach_or_switch() {
+    local target="$1"
+    if [[ -n "$TMUX" ]]; then
+        tmux switch-client -t "$target"
+    else
+        tmux attach-session -t "$target"
+    fi
+}
+
+# ---------------------------------------------------------------------------
+# Mount
+# ---------------------------------------------------------------------------
+
+mount_rclone() {
+    local host="$1"
+    local remote_path="$2"
+    local mount="$3"
+    local rc_sock="$4"
+
+    cd "$HOME" || exit 1
+
+    mkdir -p "$mount" "$(dirname "$rc_sock")"
+    rm -f "$rc_sock"
+
+    # Force unmount any previous dead mount before starting a new one
+    if mountpoint -q "$mount" 2>/dev/null; then
+        fusermount3 -uz -- "$mount" 2>/dev/null || umount -l "$mount" 2>/dev/null
+        sleep 0.2
+    fi
+
+    printf 'Mounting %s:%s at %s\n' "$host" "$remote_path" "$mount"
+
+    rclone mount ":sftp:$remote_path" "$mount" \
+        --sftp-ssh "ssh $SSH_FLAGS $host" \
+        --sftp-known-hosts-file none \
+        --sftp-shell-type none \
+        --vfs-cache-mode writes \
+        --vfs-write-back 1s \
+        --dir-cache-time 999h \
+        --attr-timeout 1s \
+        --rc \
+        --rc-no-auth \
+        --rc-addr "$rc_sock" \
+        --daemon || die "rclone mount failed"
+
+    # Wait up to 3 seconds for the RC Unix socket to bind
+    local timeout=30
+    while [[ ! -S "$rc_sock" && $timeout -gt 0 ]]; do
+        sleep 0.1
+        ((timeout--))
+    done
+    [[ -S "$rc_sock" ]] || die "rclone RC socket failed to appear at $rc_sock"
+}
+
+# ---------------------------------------------------------------------------
+# Tmux Session
+# ---------------------------------------------------------------------------
+
+create_session() {
+    local session="$1"
+    local host="$2"
+    local mount="$3"
+    local remote_path="$4"
+    local rc_sock="$5"
+    local edit_pane
+
+    local remote_path_escaped
+    remote_path_escaped=$(printf "'%s'" "${remote_path//\'/\'\\\'\'}")
+
+    tmux new-session -d -s "$session" -c "$mount" "zsh -l" \
+        || die "failed to create tmux session"
+
+    tmux set-option -g focus-events on
+
+    edit_pane="$(tmux display-message -p -t "$session" '#{pane_id}')"
+
+    tmux set-option -t "$session" @rclone_mount "$mount"
+    tmux set-option -t "$session" @rclone_edit_pane "$edit_pane"
+
+    # Flush pending local writes when leaving a pane
+    tmux set-hook -t "$session" pane-focus-out \
+        "run-shell -b 'sync -f \"$mount\"'"
+
+    # Invalidate rclone directory cache using --unix-socket when focusing back into the edit pane
+    tmux set-hook -t "$session" pane-focus-in \
+        "if-shell -F '#{==:#{pane_id},$edit_pane}' 'run-shell -b \"[[ -S $rc_sock ]] && rclone rc --unix-socket $rc_sock vfs/forget >/dev/null 2>&1 || true\"'"
+
+    printf '%s\n' "$edit_pane"
+}
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+require_command tmux
+require_command ssh
+require_command rclone
+require_command sync
+
+[[ $# -ge 1 ]] || usage
+
+# Support either "host:/remote/path" or "host [remote/path]"
+if [[ "$1" == *:* ]]; then
+    host="${1%%:*}"
+    remote_path="${1#*:}"
+    [[ -n "$remote_path" ]] || remote_path="."
+else
+    host="$1"
+    remote_path="${2:-.}"
+fi
+
+[[ -n "$host" ]] || usage
+
+session="rclone-${host//[.:]/_}"
+
+# Connect to the session if it already exists
+if tmux has-session -t "$session" 2>/dev/null; then
+    attach_or_switch "$session"
+    exit 0
+fi
+
+mount="$HOME/.sshfs/$host"
+rc_sock="$HOME/.cache/rclone-rc-$host.sock"
+
+mount_rclone "$host" "$remote_path" "$mount" "$rc_sock"
+
+edit_pane="$(create_session "$session" "$host" "$mount" "$remote_path" "$rc_sock")"
+tmux select-pane -t "$edit_pane"
+attach_or_switch "$session"
