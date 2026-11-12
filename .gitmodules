@@ -34,3 +34,9 @@
 [submodule "config/vim-mini/mini.vim/pack/plugins/start/vim-easy-align"]
 	path = config/vim-mini/mini.vim/pack/plugins/start/vim-easy-align
 	url = https://github.com/junegunn/vim-easy-align.git
+[submodule "config/vim-mini/mini.vim/pack/plugins/start/vim-oscyank"]
+	path = config/vim-mini/mini.vim/pack/plugins/start/vim-oscyank
+	url = https://github.com/ojroques/vim-oscyank.git
+[submodule "config/vim-mini/mini.vim/pack/plugins/start/vim"]
+	path = config/vim-mini/mini.vim/pack/plugins/start/vim
+	url = https://github.com/rose-pine/vim.git

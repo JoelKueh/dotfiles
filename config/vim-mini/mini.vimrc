@@ -14,7 +14,7 @@ if has('termguicolors')
   set termguicolors
 endif
 
-colo kanagawa
+colo rosepine
 let mapleader = " "
 set path+=**
 set hidden
@@ -22,6 +22,7 @@ set number
 set relativenumber
 set tabstop=4
 set shiftwidth=4
+set softtabstop=4
 set expandtab
 set incsearch
 set hlsearch
@@ -46,6 +47,11 @@ nnoremap <silent> ge G
 vnoremap <silent> gl $
 vnoremap <silent> gh 0
 vnoremap <silent> ge G
+
+" OSC-52 Clipboard Copy
+nmap <leader>y <Plug>OSCYankOperator
+nmap <leader>yy <leader>y_
+vmap <leader>y <Plug>OSCYankVisual
 
 " =============================================================================
 " Project Level Utilities
@@ -135,6 +141,22 @@ function! s:Rg(pattern, word) abort
         \ . (a:word ? ' --word-regexp' : '') . ' -- ' . shellescape(l:pattern)
     execute 'cexpr system(' . string(l:cmd). ')'
     call s:QfOpenPicker()
+endfunction
+
+" Opens buffers in the quickfix list
+function! s:Buffers() abort
+	let l:items = []
+	for l:bufnr in range(1, bufnr('$'))
+		if buflisted(l:bufnr)
+			let l:name = bufname(l:bufnr)
+			if empty(l:name)
+				let l:name = '[No Name]'
+			endif
+			call add(l:items, { 'bufnr': l:bufnr, 'lnum': 1, 'text': l:name })
+		endif
+	endfor
+	call setqflist(l:items, 'r')
+	call s:QfOpenPicker()
 endfunction
 
 " =============================================================================
