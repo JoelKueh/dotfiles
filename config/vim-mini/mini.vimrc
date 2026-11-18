@@ -7,11 +7,11 @@ syntax on
 filetype plugin indent on
 
 if !has('gui_running') && &term =~ '^\%(screen\|tmux\)'
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 endif
 if has('termguicolors')
-  set termguicolors
+    set termguicolors
 endif
 
 colo rosepine
@@ -112,51 +112,137 @@ function! s:QfSelect(preview, exit) abort
     endif
 endfunction
 
+" Toggle the quickfix list
+function! s:ToggleQuickfix() abort
+  if empty(filter(getwininfo(), 'v:val.quickfix'))
+    copen
+  else
+    cclose
+  endif
+endfunction
+
 " =============================================================================
 " Quickfix Pickers
 " =============================================================================
 
-" Searches for a file using git files
-function! s:FindFile(pattern) abort
-    let l:pattern = empty(a:pattern) ? input('FindFile: ') : a:pattern
-    if empty(l:pattern)
+" Helper: returns matching files from ripgrep relative to ProjectRoot
+function! s:RgFilesList(pattern) abort
+    let l:root = s:ProjectRoot()
+    let l:cmd = 'cd ' . shellescape(l:root)
+        \ . ' && rg --files --hidden'
+        \ . ' --glob "!.git"'
+        \ . ' --glob "!*.swp"'
+        \ . ' --glob "!*.swo"'
+        \ . ' --glob "!*.swn"'
+        \ . ' --glob "!*~"'
+        \ . ' --glob "!.DS_Store"'
+    let l:files = systemlist(l:cmd)
+
+    if !empty(a:pattern)
+        let l:pat = tolower(a:pattern)
+        call filter(l:files, {_, f -> stridx(tolower(f), l:pat) >= 0})
+    endif
+    return l:files
+endfunction
+
+" Opens exact file match, numbered list (<= 20), or quickfix picker (> 20)
+function! s:RgFiles(pattern) abort
+    let l:root = s:ProjectRoot()
+    let l:exact = l:root . '/' . a:pattern
+
+    " 1. Exact file match (never a directory) -> open immediately
+    if !empty(a:pattern) && filereadable(l:exact) && !isdirectory(l:exact)
+        execute 'edit ' . fnameescape(l:exact)
         return
     endif
 
-    let l:cmd = 'rg --files --hidden --glob "!.git"'
-        \ . ' | rg -i -- ' . shellescape(l:pattern)
-    call setqflist(map(systemlist(l:cmd), {_, f -> {'filename': f}}), 'r')
-    call s:QfOpenPicker()
+    " 2. Get matches
+    let l:matches = s:RgFilesList(a:pattern)
+    if empty(l:matches)
+        echohl WarningMsg | echo 'No matching files for: ' . a:pattern | echohl None
+        return
+    endif
+
+    " 3. Large result set (> 20) -> send to quickfix picker (capped for speed)
+    if len(l:matches) > 20
+        let l:limit = 500
+        let l:total = len(l:matches)
+        let l:slice = l:matches[0 : l:limit - 1]
+        let l:qflist = map(l:slice, {_, f -> {'filename': l:root . '/' . f}})
+        call setqflist(l:qflist, 'r')
+        call s:QfOpenPicker()
+        if l:total > l:limit
+            echohl WarningMsg
+            echo printf('Showing first %d of %d matches. Narrow your pattern to see more.', l:limit, l:total)
+            echohl None
+        endif
+        return
+    endif
+
+    " 4. Small result set (<= 20) -> show numbered list like :buffers
+    for l:i in range(len(l:matches))
+        echo printf('%3d  %s', l:i + 1, l:matches[l:i])
+    endfor
+
+    let l:choice = input('Open file #: ')
+    if l:choice =~# '^\d\+$'
+        let l:idx = str2nr(l:choice) - 1
+        if l:idx >= 0 && l:idx < len(l:matches)
+            let l:target = l:root . '/' . l:matches[l:idx]
+            if filereadable(l:target) && !isdirectory(l:target)
+                execute 'edit ' . fnameescape(l:target)
+            endif
+        endif
+    endif
 endfunction
 
-" Searches for a word using ripgrep.
+" Custom wildmenu completion for :RgFiles
+function! s:RgFilesComplete(ArgLead, CmdLine, CursorPos) abort
+    return s:RgFilesList(a:ArgLead)
+endfunction
+
+" Searches for a word/pattern using ripgrep.
 function! s:Rg(pattern, word) abort
     let l:pattern = empty(a:pattern) ? input('Rg: ') : a:pattern
     if empty(l:pattern)
         return
     endif
 
-    let l:cmd = '!cd ' . shellescape(s:ProjectRoot()) . ' rg --vimgrep --smart-case --hidden '
-        \ . ' --glob "!.git" --glob "!tags" --glob "!.tags"'
-        \ . (a:word ? ' --word-regexp' : '') . ' -- ' . shellescape(l:pattern)
-    execute 'cexpr system(' . string(l:cmd). ')'
-    call s:QfOpenPicker()
-endfunction
+    let l:root = s:ProjectRoot()
+    let l:cmd = 'cd ' . shellescape(l:root)
+        \ . ' && rg --vimgrep --smart-case --hidden'
+        \ . ' --glob "!.git"'
+        \ . ' --glob "!tags"'
+        \ . ' --glob "!.tags"'
+        \ . ' --glob "!*.swp"'
+        \ . ' --glob "!*.swo"'
+        \ . ' --glob "!*.swn"'
+        \ . ' --glob "!*~"'
+        \ . ' --glob "!.DS_Store"'
+        \ . (a:word ? ' --word-regexp' : '')
+        \ . ' -- ' . shellescape(l:pattern)
 
-" Opens buffers in the quickfix list
-function! s:Buffers() abort
-	let l:items = []
-	for l:bufnr in range(1, bufnr('$'))
-		if buflisted(l:bufnr)
-			let l:name = bufname(l:bufnr)
-			if empty(l:name)
-				let l:name = '[No Name]'
-			endif
-			call add(l:items, { 'bufnr': l:bufnr, 'lnum': 1, 'text': l:name })
-		endif
-	endfor
-	call setqflist(l:items, 'r')
-	call s:QfOpenPicker()
+    let l:lines = systemlist(l:cmd)
+    if empty(l:lines)
+        echohl WarningMsg | echo 'No matches for: ' . l:pattern | echohl None
+        return
+    endif
+
+    let l:limit = 500
+    let l:total = len(l:lines)
+    if l:total > l:limit
+        let l:lines = l:lines[0 : l:limit - 1]
+    endif
+
+    " Parse vimgrep output into quickfix without jumping to the first match
+    cgetexpr l:lines
+    call s:QfOpenPicker()
+
+    if l:total > l:limit
+        echohl WarningMsg
+        echo printf('Showing first %d of %d matches. Narrow your pattern to see more.', l:limit, l:total)
+        echohl None
+    endif
 endfunction
 
 " =============================================================================
@@ -165,16 +251,17 @@ endfunction
 
 " Picker Commands
 command! -nargs=1 FindFile call <SID>FindFile(<q-args>)
+command! -nargs=? -complete=customlist,s:RgFilesComplete RgFiles call <SID>RgFiles(<q-args>)
 command! -nargs=1 Rg call <SID>Rg(<q-args>, 0)
 command! -nargs=1 RgRefs call <SID>Rg(expand("<cword>"), 1)
 
 " Picker Keybinds
-nnoremap <leader>f :FindFile<Space>
+nnoremap <leader>f :RgFiles<Space>
+nnoremap <leader>F :FindFile<Space>
 nnoremap <silent> <leader>e :Explore<CR>
 nnoremap <silent> <leader>b :buffers<CR>:buffer<Space>
 nnoremap <silent> <leader>j :jumps<CR>
 nnoremap <leader>/ :Rg<Space>
-nnoremap <leader> <leader>d :LspDocumentDiagnostics<CR>
 
 " CTags Navigation
 nnoremap gd :execute 'tjump ' . <SID>Symbol()<CR>
@@ -191,21 +278,19 @@ nnoremap <leader>tpv :execute 'ptag ' . <SID>Symbol()<CR>
 nnoremap <leader>tpc :pclose<CR>
 
 " Quickfix Navigation
-nnoremap <leader>qo :call <SID>QfOpenPicker()<CR>
-nnoremap <leader>qc :cclose<CR>
-nnoremap <leader>qn :cnext<CR>
-nnoremap <leader>qp :cprevious<CR>
-nnoremap ]q :cnext<CR>
-nnoremap [q :cprevious<CR>
+nnoremap <leader>q :call <SID>ToggleQuickfix()<CR>
+nnoremap <silent><expr> ]q empty(filter(getwininfo(), 'v:val.loclist')) ? ':cnext<CR>' : ':lnext<CR>'
+nnoremap <silent><expr> [q empty(filter(getwininfo(), 'v:val.loclist')) ? ':cprevious<CR>' : ':lprevious<CR>'
 
 " Quickfix Window Keybinds
 augroup quickfix_picker
-  autocmd!
-  autocmd FileType qf nnoremap <buffer><silent> q :cclose<CR>
-  autocmd FileType qf nnoremap <buffer><silent> o :call <SID>QfSelect(0, 1)<CR>
-  autocmd FileType qf nnoremap <buffer><silent> p :call <SID>QfSelect(1, 0)<CR>
-  autocmd FileType qf nnoremap <buffer> t <C-W><CR><C-W>T
-  autocmd FileType qf nnoremap <buffer> v <C-W><CR><C-W>L
-  autocmd FileType qf nnoremap <buffer> s <C-W><CR><C-W>K
+    autocmd!
+    autocmd FileType qf nnoremap <buffer><silent><expr> q getwininfo(win_getid())[0].loclist ? ':lclose<CR>' : ':cclose<CR>'
+    autocmd FileType qf nnoremap <buffer><silent> q :cclose<CR>
+    autocmd FileType qf nnoremap <buffer><silent> o :call <SID>QfSelect(0, 1)<CR>
+    autocmd FileType qf nnoremap <buffer><silent> p :call <SID>QfSelect(1, 0)<CR>
+    autocmd FileType qf nnoremap <buffer> t <C-W><CR><C-W>T
+    autocmd FileType qf nnoremap <buffer> v <C-W><CR><C-W>L
+    autocmd FileType qf nnoremap <buffer> s <C-W><CR><C-W>K
 augroup END
 
