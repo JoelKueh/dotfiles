@@ -91,12 +91,15 @@ alias ll="ls -l"
 alias la="ls -lA"
 alias h="history | grep"
 
-source ~/EE5327.zshrc
+[[ -f ~/EE5327.zshrc ]] && source ~/EE5327.zshrc
+
+export PATH="$HOME/opt/verible/verible/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 # opencode
-export PATH=/home/joel/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"
 
 # Qwen Code PATH block begin
-export PATH='/home/joel/.local/bin':$PATH
+export PATH="$HOME/.local/bin:$PATH"
 # Qwen Code PATH block end
 
