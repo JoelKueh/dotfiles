@@ -1,4 +1,4 @@
 setlocal colorcolumn=100
-set noexpandtab
-set tabstop=8
-set shiftwidth=8
+setlocal noexpandtab
+setlocal tabstop=8
+setlocal shiftwidth=8
