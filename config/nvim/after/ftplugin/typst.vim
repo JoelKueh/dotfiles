@@ -1,11 +1,11 @@
 " Editing Configuration
 setlocal colorcolumn=100
-set expandtab
-set tabstop=2
-set shiftwidth=2
-set textwidth=100
-set formatoptions+=t
-set showbreak="↪ "
+setlocal expandtab
+setlocal tabstop=2
+setlocal shiftwidth=2
+setlocal textwidth=100
+setlocal formatoptions+=t
+setlocal showbreak="↪ "
 
 " Compiler Setup
 setlocal makeprg=typst\ compile\ %:S
