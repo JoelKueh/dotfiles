@@ -46,3 +46,6 @@
 [submodule "config/vim-mini/mini.vim/pack/plugins/start/verilog_systemverilog.vim"]
 	path = config/vim-mini/mini.vim/pack/plugins/start/verilog_systemverilog.vim
 	url = https://github.com/vhda/verilog_systemverilog.vim.git
+[submodule "config/vim-mini/mini.vim/pack/plugins/start/vim-c-cpp-modern"]
+	path = config/vim-mini/mini.vim/pack/plugins/start/vim-c-cpp-modern
+	url = https://github.com/bfrg/vim-c-cpp-modern
