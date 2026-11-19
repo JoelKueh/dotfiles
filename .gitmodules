@@ -37,9 +37,6 @@
 [submodule "config/vim-mini/mini.vim/pack/plugins/start/vim-oscyank"]
 	path = config/vim-mini/mini.vim/pack/plugins/start/vim-oscyank
 	url = https://github.com/ojroques/vim-oscyank.git
-[submodule "config/vim-mini/mini.vim/pack/plugins/start/vim"]
-	path = config/vim-mini/mini.vim/pack/plugins/start/vim
-	url = https://github.com/rose-pine/vim.git
 [submodule "config/vim-mini/mini.vim/pack/plugins/start/typst.vim"]
 	path = config/vim-mini/mini.vim/pack/plugins/start/typst.vim
 	url = https://github.com/kaarmu/typst.vim.git
@@ -49,3 +46,6 @@
 [submodule "config/vim-mini/mini.vim/pack/plugins/start/vim-c-cpp-modern"]
 	path = config/vim-mini/mini.vim/pack/plugins/start/vim-c-cpp-modern
 	url = https://github.com/bfrg/vim-c-cpp-modern
+[submodule "config/vim-mini/mini.vim/pack/plugins/start/rose-pine"]
+	path = config/vim-mini/mini.vim/pack/plugins/start/rose-pine
+	url = https://github.com/rose-pine/vim.git
