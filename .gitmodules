@@ -43,3 +43,6 @@
 [submodule "config/vim-mini/mini.vim/pack/plugins/start/typst.vim"]
 	path = config/vim-mini/mini.vim/pack/plugins/start/typst.vim
 	url = https://github.com/kaarmu/typst.vim.git
+[submodule "config/vim-mini/mini.vim/pack/plugins/start/verilog_systemverilog.vim"]
+	path = config/vim-mini/mini.vim/pack/plugins/start/verilog_systemverilog.vim
+	url = https://github.com/vhda/verilog_systemverilog.vim.git
