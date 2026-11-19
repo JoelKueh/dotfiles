@@ -1,4 +1,7 @@
-[[ -e '/opt/riscv' ]] && export RISCV=/opt/riscv
+if [ -e '/opt/riscv' ]; then
+    export RISCV=/opt/riscv
+fi
+
 export XCURSOR_SIZE=24
 export HYPRCURSOR_SIZE=24
 export QT_QPA_PLATFORM=wayland
