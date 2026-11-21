@@ -45,7 +45,6 @@ mount_rclone() {
     mkdir -p "$mount" "$(dirname "$rc_sock")"
     rm -f "$rc_sock"
 
-    # Force unmount any previous dead mount before starting a new one
     if mountpoint -q "$mount" 2>/dev/null; then
         fusermount3 -uz -- "$mount" 2>/dev/null || umount -l "$mount" 2>/dev/null
         sleep 0.2
@@ -53,12 +52,16 @@ mount_rclone() {
 
     printf 'Mounting %s:%s at %s\n' "$host" "$remote_path" "$mount"
 
+    # --vfs-cache-mode off + --sftp-set-modtime=false prevents rclone from
+    # recreating files or altering remote permissions/timestamps behind Neovim's back,
+    # while --dir-cache-time 999h keeps the full directory tree cached in RAM
+    # until vfs/forget is triggered on pane switch.
     rclone mount ":sftp:$remote_path" "$mount" \
         --sftp-ssh "ssh $SSH_FLAGS $host" \
         --sftp-known-hosts-file none \
         --sftp-shell-type none \
-        --vfs-cache-mode writes \
-        --vfs-write-back 1s \
+        --sftp-set-modtime=false \
+        --vfs-cache-mode off \
         --dir-cache-time 999h \
         --attr-timeout 1s \
         --rc \
@@ -66,7 +69,6 @@ mount_rclone() {
         --rc-addr "$rc_sock" \
         --daemon || die "rclone mount failed"
 
-    # Wait up to 3 seconds for the RC Unix socket to bind
     local timeout=30
     while [[ ! -S "$rc_sock" && $timeout -gt 0 ]]; do
         sleep 0.1
@@ -104,9 +106,17 @@ create_session() {
     tmux set-hook -t "$session" pane-focus-out \
         "run-shell -b 'sync -f \"$mount\"'"
 
-    # Invalidate rclone directory cache using --unix-socket when focusing back into the edit pane
+    # Invalidate rclone directory cache when focusing back into the edit pane
     tmux set-hook -t "$session" pane-focus-in \
         "if-shell -F '#{==:#{pane_id},$edit_pane}' 'run-shell -b \"[[ -S $rc_sock ]] && rclone rc --unix-socket $rc_sock vfs/forget >/dev/null 2>&1 || true\"'"
+
+    if command -v autossh >/dev/null 2>&1; then
+        tmux set-option -t "$session" default-command \
+            "autossh -M 0 $SSH_FLAGS -t $host 'cd $remote_path_escaped && exec zsh -l'"
+    else
+        tmux set-option -t "$session" default-command \
+            "ssh $SSH_FLAGS -t $host 'cd $remote_path_escaped && exec zsh -l'"
+    fi
 
     printf '%s\n' "$edit_pane"
 }
@@ -122,7 +132,6 @@ require_command sync
 
 [[ $# -ge 1 ]] || usage
 
-# Support either "host:/remote/path" or "host [remote/path]"
 if [[ "$1" == *:* ]]; then
     host="${1%%:*}"
     remote_path="${1#*:}"
@@ -136,7 +145,6 @@ fi
 
 session="rclone-${host//[.:]/_}"
 
-# Connect to the session if it already exists
 if tmux has-session -t "$session" 2>/dev/null; then
     attach_or_switch "$session"
     exit 0

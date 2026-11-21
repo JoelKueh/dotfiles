@@ -1,0 +1,111 @@
+#!/usr/bin/bash
+set -o pipefail
+
+SSH_FLAGS="-o RequestTTY=no -o RemoteCommand=none -o StrictHostKeyChecking=accept-new"
+
+die() { printf 'tmux-sshfs: %s\n' "$*" >&2; exit 1; }
+usage() { echo "usage: $(basename "$0") <host>[:remote/path] [remote/path]" >&2; exit 1; }
+require_command() { command -v "$1" >/dev/null 2>&1 || die "required command not found: $1"; }
+
+attach_or_switch() {
+    if [[ -n "$TMUX" ]]; then
+        tmux switch-client -t "$1"
+    else
+        tmux attach-session -t "$1"
+    fi
+}
+
+mount_sshfs() {
+    local host="$1"
+    local remote_path="$2"
+    local mount="$3"
+
+    cd "$HOME" || exit 1
+    mkdir -p "$mount"
+
+    if mountpoint -q "$mount" 2>/dev/null; then
+        fusermount3 -uz -- "$mount" 2>/dev/null || umount -l "$mount" 2>/dev/null
+        sleep 0.2
+    fi
+
+    printf 'Mounting %s:%s at %s\n' "$host" "$remote_path" "$mount"
+
+    # Use the Linux kernel VFS cache (36000s = 10 hours) instead of sshfs's internal
+    # dir_cache so that `sysctl -w vm.drop_caches=2` on pane switch clears it instantly!
+    sshfs "$host:$remote_path" "$mount" \
+        -o ssh_command="ssh $SSH_FLAGS" \
+        -o dir_cache=no \
+        -o auto_cache \
+        -o entry_timeout=36000 \
+        -o attr_timeout=36000 \
+        -o negative_timeout=36000 \
+        -o reconnect \
+        -o ServerAliveInterval=15 || die "sshfs mount failed"
+}
+
+create_session() {
+    local session="$1"
+    local host="$2"
+    local mount="$3"
+    local remote_path="$4"
+    local edit_pane
+
+    local remote_path_escaped
+    remote_path_escaped=$(printf "'%s'" "${remote_path//\'/\'\\\'\'}")
+
+    tmux new-session -d -s "$session" -c "$mount" "zsh -l" \
+        || die "failed to create tmux session"
+
+    tmux set-option -g focus-events on
+    edit_pane="$(tmux display-message -p -t "=$session" '#{pane_id}')"
+
+    # Flush pending writes when leaving a pane
+    tmux set-hook -t "=$session" pane-focus-out \
+        "run-shell -b 'sync -f \"$mount\"'"
+
+    # Instantly invalidate the kernel dentry/inode cache when focusing back into the edit pane
+    tmux set-hook -t "=$session" pane-focus-in \
+        "if-shell -F '#{==:#{pane_id},$edit_pane}' 'run-shell -b \"sudo -n /usr/sbin/sysctl -w vm.drop_caches=2 >/dev/null 2>&1 || true\"'"
+
+    if command -v autossh >/dev/null 2>&1; then
+        tmux set-option -t "=$session" default-command \
+            "autossh -M 0 $SSH_FLAGS -t $host 'cd $remote_path_escaped && exec zsh -l'"
+    else
+        tmux set-option -t "=$session" default-command \
+            "ssh $SSH_FLAGS -t $host 'cd $remote_path_escaped && exec zsh -l'"
+    fi
+
+    printf '%s\n' "$edit_pane"
+}
+
+require_command tmux
+require_command ssh
+require_command sshfs
+require_command sync
+
+[[ $# -ge 1 ]] || usage
+
+if [[ "$1" == *:* ]]; then
+    host="${1%%:*}"
+    remote_path="${1#*:}"
+    [[ -n "$remote_path" ]] || remote_path="."
+else
+    host="$1"
+    remote_path="${2:-.}"
+fi
+
+[[ -n "$host" ]] || usage
+
+session="sshfs-${host//[.:]/_}"
+
+if tmux has-session -t "=$session" 2>/dev/null; then
+    attach_or_switch "=$session"
+    exit 0
+fi
+
+mount="$HOME/.sshfs/$host"
+mount_sshfs "$host" "$remote_path" "$mount"
+
+edit_pane="$(create_session "$session" "$host" "$mount" "$remote_path")"
+tmux select-pane -t "$edit_pane"
+attach_or_switch "=$session"

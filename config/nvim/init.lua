@@ -44,6 +44,15 @@ vim.opt.expandtab = false
 vim.opt.runtimepath:prepend("/home/kuehn348/opt/share/nvim/runtime")
 vim.o.exrc = true
 
+vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
+  pattern = vim.fn.expand("$HOME") .. "/.sshfs/*",
+  callback = function()
+    vim.opt_local.backupcopy = "yes" -- Write in-place so remote +x permissions are never stripped
+    vim.opt_local.swapfile = false   -- Required for --vfs-cache-mode off
+    vim.opt_local.writebackup = false
+  end,
+})
+
 ----------------------------------------------------------------------
 -- Generic
 ----------------------------------------------------------------------
