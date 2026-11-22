@@ -251,6 +251,34 @@ function! s:Rg(pattern, word) abort
 endfunction
 
 " =============================================================================
+" Auto Reload
+" =============================================================================
+
+" Automatically reload files changed outside Vim (when buffer has no unsaved edits)
+set autoread
+set updatetime=500
+
+" Check for changes when focusing Vim, switching buffers, or pausing the cursor
+augroup AutoReload
+  autocmd!
+  autocmd FocusGained,BufEnter,CursorHold,CursorHoldI,InsertEnter *
+        \ if mode() !~# '\v(c|r.?|!|t)' | silent! checktime | endif
+  autocmd FileChangedShellPost *
+        \ echohl WarningMsg | echo "File changed on disk. Buffer reloaded." | echohl None
+augroup END
+
+" Poll for external file changes on a 5s timer
+function! s:CheckTime(timer) abort
+  if mode() !~# '\v(c|r.?|!|t)' && getcmdwintype() ==# ''
+    silent! checktime
+  endif
+endfunction
+
+if has('timers')
+  call timer_start(5000, function('s:CheckTime'), {'repeat': -1})
+endif
+
+" =============================================================================
 " Default Bindings
 " =============================================================================
 
