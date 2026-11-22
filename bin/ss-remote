@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+    echo "usage: $(basename "$0") <host>:<remote_dir> [name]" >&2
+    exit 1
+}
+
+[[ $# -ge 1 && "$1" == *:* ]] || usage
+
+host="${1%%:*}"
+remote_dir="${1#*:}"
+[[ -n "$host" && -n "$remote_dir" ]] || usage
+
+name="${2:-ss_$(date +%Y%m%d_%H%M%S)}"
+[[ "$name" == *.png ]] || name="${name}.png"
+
+# Capture region with your original timings
+sleep 1.0
+if ! geo="$(slurp)"; then
+    echo "Screenshot cancelled" >&2
+    exit 1
+fi
+sleep 0.2
+
+# Quote remote paths safely while preserving leading ~ expansion
+printf -v q_name '%q' "$name"
+if [[ "$remote_dir" == "~" ]]; then
+    q_dir="\$HOME/images"
+    q_file="\$HOME/images/$q_name"
+elif [[ "$remote_dir" == "~/"* ]]; then
+    printf -v q_sub '%q' "${remote_dir#\~/}"
+    q_dir="\$HOME/$q_sub/images"
+    q_file="\$HOME/$q_sub/images/$q_name"
+else
+    printf -v q_dir '%q' "$remote_dir/images"
+    q_file="$q_dir/$q_name"
+fi
+
+# Stream PNG directly to the remote host
+grim -g "$geo" - | ssh "$host" "mkdir -p -- $q_dir && cat > $q_file"
+
+echo "Uploaded: $host:$remote_dir/images/$name"
+
+# Copy Typst snippet to Wayland clipboard if available
+if command -v wl-copy >/dev/null 2>&1; then
+    printf '#image("images/%s")' "$name" | wl-copy
+    echo "Copied to clipboard: #image(\"images/$name\")"
+fi
