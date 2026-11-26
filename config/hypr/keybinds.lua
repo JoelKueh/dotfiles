@@ -8,7 +8,7 @@ local vars = require("variables")
 hl.unbind(vars.mainMod .. " + J")
 hl.bind(vars.mainMod .. " + H",  hl.dsp.focus({ direction = "l" }))
 hl.bind(vars.mainMod .. " + J",  hl.dsp.focus({ direction = "d" }))
-hl.bind(vars.mainMod .. " + K",    hl.dsp.focus({ direction = "u" }))
+hl.bind(vars.mainMod .. " + K", hl.dsp.focus({ direction = "u" }))
 hl.bind(vars.mainMod .. " + L", hl.dsp.focus({ direction = "r" }))
 
 -- Move windows
@@ -53,7 +53,6 @@ hl.bind(vars.mainMod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = "10" })
 -- Layout
 -- =============================================================================
 
-hl.bind(vars.mainMod .. " + B", hl.dsp.layout("togglesplit"))
 hl.bind(vars.mainMod .. " + V", hl.dsp.layout("togglesplit"))
 hl.bind(vars.mainMod .. " + W", hl.dsp.group.toggle())
 hl.bind(vars.mainMod .. " + F", hl.dsp.window.fullscreen({ action = "toggle" }))
@@ -75,7 +74,6 @@ hl.bind(vars.mainMod .. " + SHIFT + C", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(vars.mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("hyprshutdown"))
 hl.bind(vars.mainMod .. " + RETURN", hl.dsp.exec_cmd(vars.terminal))
 hl.bind(vars.mainMod .. " + SHIFT + Q", hl.dsp.window.close())
-hl.bind(vars.mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
 
 -- Move focus with vars.mainMod + arrow keys
 hl.bind(vars.mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
